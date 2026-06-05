@@ -1,0 +1,16 @@
+{
+  "name": "RESONA \u2014 Ambient Resynthesis",
+  "short_name": "RESONA",
+  "description": "Turns the sound of the room into a granular ambient synthesiser, pitch-snapped to a scale.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#080c0e",
+  "theme_color": "#080c0e",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
