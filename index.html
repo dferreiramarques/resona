@@ -28,14 +28,14 @@
     background-image:repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 1px, transparent 1px 3px);
     mix-blend-mode:overlay;opacity:.5}
   #app{display:flex;flex-direction:column;height:100%;
-    padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px);
-    max-width:760px;margin:0 auto;position:relative;z-index:1}
+    padding:calc(env(safe-area-inset-top) + 14px) 18px calc(env(safe-area-inset-bottom) + 14px);
+    max-width:1120px;margin:0 auto;position:relative;z-index:1}
   header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-shrink:0}
   h1{font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:1px;margin:0;text-transform:lowercase}
   h1 b{color:var(--cyan);font-weight:400}
   .tag{font-size:10px;color:var(--txt-dim);letter-spacing:2px;text-transform:uppercase}
   .scope{position:relative;flex:0 0 auto;margin:14px 0;border:1px solid var(--line);
-    border-radius:14px;overflow:hidden;background:#070b0d;height:160px}
+    border-radius:14px;overflow:hidden;background:#070b0d;height:140px}
   canvas{display:block;width:100%;height:100%}
   .scope .readout{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
   .note{font-family:var(--display);font-size:46px;line-height:1;color:var(--cyan);text-shadow:0 0 24px rgba(63,223,208,.45);transition:opacity .25s}
@@ -44,12 +44,14 @@
   .controls{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;padding-right:2px}
   .controls::-webkit-scrollbar{width:6px}
   .controls::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
-  .drywet{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
-  .drywet .ends{display:flex;justify-content:space-between;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--txt-dim);margin-bottom:9px}
+  .drywet{padding:11px 16px;border:1px solid var(--line);border-radius:13px;background:var(--panel)}
+  .drywet .ends{display:flex;justify-content:space-between;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--txt-dim);margin-bottom:6px}
   .drywet .ends .a{color:var(--amber)} .drywet .ends .b{color:var(--cyan)}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  .card{padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
-  .card .lab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:760px){ .grid{grid-template-columns:1fr 1fr} }
+  @media(max-width:460px){ .grid{grid-template-columns:1fr} }
+  .card{padding:10px 14px;border:1px solid var(--line);border-radius:13px;background:var(--panel)}
+  .card .lab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
   .card .lab span:first-child{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--txt-dim)}
   .card .lab .val{font-size:13px;color:var(--cyan)}
   .full{grid-column:1 / -1}
@@ -64,9 +66,15 @@
   select{width:100%;background:#0a1113;color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-family:var(--mono);font-size:13px;-webkit-appearance:none;appearance:none;
     background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%235e7378'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
   .transport{flex-shrink:0;margin-top:12px;display:flex;gap:10px;align-items:center}
-  button.power{flex:1;border:1px solid var(--cyan-dim);background:#0a1416;color:var(--cyan);font-family:var(--mono);font-size:14px;letter-spacing:3px;text-transform:uppercase;padding:16px;border-radius:14px;cursor:pointer;transition:.2s;font-weight:500}
+  button.power{flex:1;border:1px solid var(--cyan-dim);background:#0a1416;color:var(--cyan);font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:15px;border-radius:14px;cursor:pointer;transition:.2s;font-weight:500}
   button.power:active{transform:scale(.985)}
   button.power.live{background:var(--cyan);color:#04100e;border-color:var(--cyan);box-shadow:0 0 30px rgba(63,223,208,.35)}
+  button.alt{flex:1;border:1px solid var(--line);background:#0a1113;color:var(--txt);font-family:var(--mono);font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:15px;border-radius:14px;cursor:pointer;transition:.2s}
+  button.alt:active{transform:scale(.985)}
+  button.alt.live{background:var(--amber);color:#1a1206;border-color:var(--amber);box-shadow:0 0 26px rgba(255,196,90,.3)}
+  button.stop{flex:0 0 auto;border:1px solid var(--line);background:#0a1113;color:var(--txt-dim);font-family:var(--mono);font-size:14px;padding:15px 18px;border-radius:14px;cursor:pointer;transition:.2s}
+  button.stop:active{transform:scale(.96)}
+  button.stop.armed{color:var(--red);border-color:var(--red)}
   .led{width:9px;height:9px;border-radius:50%;background:var(--line);flex-shrink:0;transition:.2s}
   .led.on{background:var(--red);box-shadow:0 0 12px var(--red);animation:pulse 1.6s infinite}
   @keyframes pulse{50%{opacity:.4}}
@@ -185,7 +193,10 @@
 
   <div class="transport">
     <span class="led" id="led"></span>
-    <button class="power" id="power">ligar microfone</button>
+    <button class="power" id="micBtn">ligar microfone</button>
+    <button class="alt" id="wavBtn">carregar .wav</button>
+    <button class="stop" id="stopBtn" title="parar">■</button>
+    <input type="file" id="wavFile" accept=".wav,.mp3,.ogg,.flac,.m4a,audio/*" style="display:none">
   </div>
   <div class="msg" id="msg">precisa de HTTPS (ou localhost) e permissão de microfone</div>
 </div>
@@ -223,7 +234,7 @@ const P = {
   density:14, spread:0.55
 };
 
-let ctx, stream, micSrc, worklet, running=false;
+let ctx, stream, micSrc, wavSource, wavBuffer, inputNode, worklet, running=false, engineReady=false, sourceMode=null;
 let ring=null, ringLen=0, ringWrite=0, ringSR=48000;
 let analysisLevel=0, snappedMidi=null, snappedClarity=0, lastPitchPc=null, lastPitchTime=0;
 let curRatio=1, targetRatio=1, hannCurve=makeHann(256);
@@ -262,29 +273,54 @@ class CaptureProcessor extends AudioWorkletProcessor{
 registerProcessor('capture',CaptureProcessor);
 `;
 
-async function start(){
+async function initEngine(){
+  if(engineReady) return;
   ctx = new (window.AudioContext||window.webkitAudioContext)();
   await ctx.resume();
   ringSR = ctx.sampleRate;
   ringLen = Math.floor(ringSR*5); ring = new Float32Array(ringLen); ringWrite=0;
 
-  stream = await navigator.mediaDevices.getUserMedia({
-    audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false, channelCount:1 }
-  });
-  micSrc = ctx.createMediaStreamSource(stream);
-
   try { await ctx.audioWorklet.addModule('capture-worklet.js'); }
   catch(e){ const u=URL.createObjectURL(new Blob([WORKLET_SRC],{type:'application/javascript'})); await ctx.audioWorklet.addModule(u); }
   worklet = new AudioWorkletNode(ctx,'capture',{numberOfOutputs:0});
   worklet.port.onmessage = onBlock;
-  micSrc.connect(worklet);
 
-  buildGraph();
+  buildGraph();              // creates inputNode and connects it to the engine
+  inputNode.connect(worklet);
   applyAll();
   setChord(curRootMidi);
-  running=true;
+  running=true; engineReady=true;
   scheduler();
   evolveLoop();
+}
+
+function stopSources(){
+  if(stream){ stream.getTracks().forEach(t=>t.stop()); stream=null; }
+  if(micSrc){ try{micSrc.disconnect();}catch(e){} micSrc=null; }
+  if(wavSource){ try{wavSource.stop();}catch(e){} try{wavSource.disconnect();}catch(e){} wavSource=null; }
+}
+
+async function startMic(){
+  await initEngine();
+  stopSources();
+  stream = await navigator.mediaDevices.getUserMedia({
+    audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false, channelCount:1 }
+  });
+  micSrc = ctx.createMediaStreamSource(stream);
+  micSrc.connect(inputNode);
+  sourceMode='mic';
+}
+
+async function loadWav(file){
+  await initEngine();
+  const data = await file.arrayBuffer();
+  wavBuffer = await ctx.decodeAudioData(data);
+  stopSources();
+  wavSource = ctx.createBufferSource();
+  wavSource.buffer = wavBuffer; wavSource.loop = true;
+  wavSource.connect(inputNode);
+  wavSource.start();
+  sourceMode='wav';
 }
 
 function onBlock(e){
@@ -333,8 +369,11 @@ function buildGraph(){
   masterComp.attack.value=0.004; masterComp.release.value=0.25;
   master.connect(masterComp); masterComp.connect(ctx.destination);
 
-  // DRY = raw room
-  dryGain = ctx.createGain(); micSrc.connect(dryGain); dryGain.connect(master);
+  // generic input bus (mic OR wav both feed this)
+  inputNode = ctx.createGain(); inputNode.gain.value=1;
+
+  // DRY = raw input
+  dryGain = ctx.createGain(); inputNode.connect(dryGain); dryGain.connect(master);
 
   // ---- CARRIER: synth pad ----
   carrierBus = ctx.createGain(); carrierBus.gain.value=0.5;
@@ -359,7 +398,7 @@ function buildGraph(){
   // ---- VOCODER (room formants -> carrier) ----
   modBus = ctx.createGain();
   const modHP = ctx.createBiquadFilter(); modHP.type='highpass'; modHP.frequency.value=120;
-  micSrc.connect(modHP); modHP.connect(modBus);
+  inputNode.connect(modHP); modHP.connect(modBus);
   vocSum = ctx.createGain(); vocSum.gain.value=1;
   const shaper = makeAbsShaper();
   for(let b=0;b<NBANDS;b++){
@@ -508,7 +547,7 @@ function applyAll(){
   textureGain.gain.setTargetAtTime(P.texture*0.9, ctx.currentTime, 0.1);
 }
 
-function stop(){ running=false; if(stream) stream.getTracks().forEach(t=>t.stop()); if(ctx) ctx.close(); ctx=null; }
+function stop(){ running=false; engineReady=false; sourceMode=null; stopSources(); if(ctx) ctx.close(); ctx=null; }
 
 /* ---------------- UI ---------------- */
 const $=id=>document.getElementById(id);
@@ -531,13 +570,29 @@ $('scale').addEventListener('change',e=>P.scale=e.target.value);
 $('root').addEventListener('change',e=>P.root=NOTES.indexOf(e.target.value));
 $('voicing').addEventListener('change',e=>{P.voicing=e.target.value; setChord(curRootMidi);});
 
-const powerBtn=$('power'),led=$('led'),msg=$('msg');
-powerBtn.addEventListener('click',async()=>{
-  if(running){ stop(); powerBtn.textContent='ligar microfone'; powerBtn.classList.remove('live'); led.classList.remove('on'); msg.textContent='parado'; msg.classList.remove('err'); return; }
+const micBtn=$('micBtn'),wavBtn=$('wavBtn'),stopBtn=$('stopBtn'),wavFile=$('wavFile'),led=$('led'),msg=$('msg');
+function refreshUI(){
+  led.classList.toggle('on', running);
+  micBtn.classList.toggle('live', running && sourceMode==='mic');
+  wavBtn.classList.toggle('live', running && sourceMode==='wav');
+  stopBtn.classList.toggle('armed', running);
+  micBtn.textContent = (running&&sourceMode==='mic') ? 'microfone ativo' : 'ligar microfone';
+}
+micBtn.addEventListener('click',async()=>{
+  if(running && sourceMode==='mic'){ return; }     // already on mic
   msg.textContent='a pedir acesso ao microfone…'; msg.classList.remove('err');
-  try{ await start(); powerBtn.textContent='a tocar — parar'; powerBtn.classList.add('live'); led.classList.add('on'); msg.textContent='síntese a reagir à sala'; }
-  catch(err){ msg.textContent='erro: '+(err.message||err); msg.classList.add('err'); running=false; }
+  try{ await startMic(); msg.textContent='microfone → síntese a reagir à sala'; refreshUI(); }
+  catch(err){ msg.textContent='erro: '+(err.message||err); msg.classList.add('err'); refreshUI(); }
 });
+wavBtn.addEventListener('click',()=>wavFile.click());
+wavFile.addEventListener('change',async(e)=>{
+  const f=e.target.files&&e.target.files[0]; if(!f) return;
+  msg.textContent='a descodificar '+f.name+'…'; msg.classList.remove('err');
+  try{ await loadWav(f); msg.textContent='♺ '+f.name+' (loop) → síntese'; refreshUI(); }
+  catch(err){ msg.textContent='não consegui ler o áudio: '+(err.message||err); msg.classList.add('err'); }
+  wavFile.value='';
+});
+stopBtn.addEventListener('click',()=>{ if(!running) return; stop(); msg.textContent='parado'; msg.classList.remove('err'); refreshUI(); });
 
 /* ---------------- visualiser ---------------- */
 const cv=$('cv'),g=cv.getContext('2d'); let particles=[];
