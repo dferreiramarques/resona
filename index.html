@@ -23,114 +23,73 @@
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);
     font-family:var(--mono);overflow:hidden;overscroll-behavior:none}
-  body{
-    background:
-      radial-gradient(120% 80% at 50% -10%, #0f1b1e 0%, var(--bg) 55%),
-      var(--bg);
-    position:relative;
-  }
-  /* grain / scanline atmosphere */
-  body::after{
-    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+  body{background:radial-gradient(120% 80% at 50% -10%, #0f1b1e 0%, var(--bg) 55%),var(--bg);position:relative}
+  body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
     background-image:repeating-linear-gradient(0deg, rgba(255,255,255,.012) 0 1px, transparent 1px 3px);
-    mix-blend-mode:overlay;opacity:.5;
-  }
+    mix-blend-mode:overlay;opacity:.5}
   #app{display:flex;flex-direction:column;height:100%;
     padding:calc(env(safe-area-inset-top) + 14px) 16px calc(env(safe-area-inset-bottom) + 14px);
     max-width:760px;margin:0 auto;position:relative;z-index:1}
-
   header{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-shrink:0}
-  h1{font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:1px;
-    margin:0;color:var(--txt);text-transform:lowercase}
+  h1{font-family:var(--display);font-weight:400;font-size:22px;letter-spacing:1px;margin:0;text-transform:lowercase}
   h1 b{color:var(--cyan);font-weight:400}
   .tag{font-size:10px;color:var(--txt-dim);letter-spacing:2px;text-transform:uppercase}
-
-  /* visual canvas */
   .scope{position:relative;flex:0 0 auto;margin:14px 0;border:1px solid var(--line);
-    border-radius:14px;overflow:hidden;background:#070b0d;height:170px}
+    border-radius:14px;overflow:hidden;background:#070b0d;height:160px}
   canvas{display:block;width:100%;height:100%}
-  .scope .readout{position:absolute;inset:0;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;pointer-events:none}
-  .note{font-family:var(--display);font-size:52px;line-height:1;color:var(--cyan);
-    text-shadow:0 0 24px rgba(63,223,208,.45);transition:opacity .25s}
-  .note.idle{color:var(--txt-dim);text-shadow:none;opacity:.4}
+  .scope .readout{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none}
+  .note{font-family:var(--display);font-size:46px;line-height:1;color:var(--cyan);text-shadow:0 0 24px rgba(63,223,208,.45);transition:opacity .25s}
+  .note.idle{color:var(--txt-dim);text-shadow:none;opacity:.45}
   .sub{font-size:10px;letter-spacing:3px;color:var(--txt-dim);text-transform:uppercase;margin-top:8px}
-
-  /* controls */
-  .controls{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;
-    -webkit-overflow-scrolling:touch;padding-right:2px}
+  .controls{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:12px;-webkit-overflow-scrolling:touch;padding-right:2px}
   .controls::-webkit-scrollbar{width:6px}
   .controls::-webkit-scrollbar-thumb{background:var(--line);border-radius:3px}
-
   .drywet{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
-  .drywet .ends{display:flex;justify-content:space-between;font-size:10px;
-    letter-spacing:2px;text-transform:uppercase;color:var(--txt-dim);margin-bottom:9px}
+  .drywet .ends{display:flex;justify-content:space-between;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--txt-dim);margin-bottom:9px}
   .drywet .ends .a{color:var(--amber)} .drywet .ends .b{color:var(--cyan)}
-
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   .card{padding:13px 15px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
   .card .lab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
   .card .lab span:first-child{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--txt-dim)}
   .card .lab .val{font-size:13px;color:var(--cyan)}
   .full{grid-column:1 / -1}
-
   input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:26px;background:transparent;cursor:pointer}
-  input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:2px;
-    background:linear-gradient(90deg,var(--cyan-dim),var(--line))}
+  input[type=range]::-webkit-slider-runnable-track{height:3px;border-radius:2px;background:linear-gradient(90deg,var(--cyan-dim),var(--line))}
   input[type=range]::-moz-range-track{height:3px;border-radius:2px;background:var(--line)}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
-    width:18px;height:18px;border-radius:50%;background:var(--cyan);margin-top:-8px;
-    box-shadow:0 0 14px rgba(63,223,208,.6);border:2px solid #07110f}
-  input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;
-    background:var(--cyan);border:2px solid #07110f;box-shadow:0 0 14px rgba(63,223,208,.6)}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--cyan);margin-top:-8px;box-shadow:0 0 14px rgba(63,223,208,.6);border:2px solid #07110f}
+  input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--cyan);border:2px solid #07110f;box-shadow:0 0 14px rgba(63,223,208,.6)}
   .drywet input[type=range]{height:34px}
-  .drywet input[type=range]::-webkit-slider-runnable-track{height:5px;
-    background:linear-gradient(90deg,var(--amber),var(--cyan))}
-  .drywet input[type=range]::-webkit-slider-thumb{width:24px;height:24px;margin-top:-10px;
-    background:#fff;box-shadow:0 0 18px rgba(255,255,255,.5)}
-
-  select{width:100%;background:#0a1113;color:var(--txt);border:1px solid var(--line);
-    border-radius:9px;padding:9px 10px;font-family:var(--mono);font-size:13px;
-    -webkit-appearance:none;appearance:none;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%235e7378'/></svg>");
-    background-repeat:no-repeat;background-position:right 12px center}
-
-  /* transport */
+  .drywet input[type=range]::-webkit-slider-runnable-track{height:5px;background:linear-gradient(90deg,var(--amber),var(--cyan))}
+  .drywet input[type=range]::-webkit-slider-thumb{width:24px;height:24px;margin-top:-10px;background:#fff;box-shadow:0 0 18px rgba(255,255,255,.5)}
+  select{width:100%;background:#0a1113;color:var(--txt);border:1px solid var(--line);border-radius:9px;padding:9px 10px;font-family:var(--mono);font-size:13px;-webkit-appearance:none;appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%235e7378'/></svg>");background-repeat:no-repeat;background-position:right 12px center}
   .transport{flex-shrink:0;margin-top:12px;display:flex;gap:10px;align-items:center}
-  button.power{flex:1;border:1px solid var(--cyan-dim);background:#0a1416;color:var(--cyan);
-    font-family:var(--mono);font-size:14px;letter-spacing:3px;text-transform:uppercase;
-    padding:16px;border-radius:14px;cursor:pointer;transition:.2s;font-weight:500}
+  button.power{flex:1;border:1px solid var(--cyan-dim);background:#0a1416;color:var(--cyan);font-family:var(--mono);font-size:14px;letter-spacing:3px;text-transform:uppercase;padding:16px;border-radius:14px;cursor:pointer;transition:.2s;font-weight:500}
   button.power:active{transform:scale(.985)}
-  button.power.live{background:var(--cyan);color:#04100e;border-color:var(--cyan);
-    box-shadow:0 0 30px rgba(63,223,208,.35)}
+  button.power.live{background:var(--cyan);color:#04100e;border-color:var(--cyan);box-shadow:0 0 30px rgba(63,223,208,.35)}
   .led{width:9px;height:9px;border-radius:50%;background:var(--line);flex-shrink:0;transition:.2s}
   .led.on{background:var(--red);box-shadow:0 0 12px var(--red);animation:pulse 1.6s infinite}
   @keyframes pulse{50%{opacity:.4}}
-
-  .msg{font-size:11px;color:var(--txt-dim);text-align:center;margin-top:9px;min-height:14px;
-    letter-spacing:.5px}
+  .msg{font-size:11px;color:var(--txt-dim);text-align:center;margin-top:9px;min-height:14px;letter-spacing:.5px}
   .msg.err{color:var(--red)}
 </style>
 </head>
 <body>
 <div id="app">
-  <header>
-    <h1>reson<b>a</b></h1>
-    <div class="tag">ambient&nbsp;·&nbsp;resynthesis</div>
-  </header>
+  <header><h1>reson<b>a</b></h1><div class="tag">ambient&nbsp;·&nbsp;resynthesis</div></header>
 
   <div class="scope">
     <canvas id="cv"></canvas>
     <div class="readout">
       <div class="note idle" id="note">—</div>
-      <div class="sub" id="sub">aguardando som da sala</div>
+      <div class="sub" id="sub">tapete sintetizado · reage à sala</div>
     </div>
   </div>
 
   <div class="controls">
     <div class="drywet">
-      <div class="ends"><span class="a">input cru (dry)</span><span class="b">síntese (wet)</span></div>
-      <input type="range" id="drywet" min="0" max="1" step="0.001" value="0.85">
+      <div class="ends"><span class="a">sala crua (dry)</span><span class="b">síntese (wet)</span></div>
+      <input type="range" id="drywet" min="0" max="1" step="0.001" value="1">
     </div>
 
     <div class="grid">
@@ -147,7 +106,6 @@
           <option value="pentaMajor">Pentatónica maior</option>
           <option value="pentaMinor">Pentatónica menor</option>
           <option value="wholeTone">Tons inteiros</option>
-          <option value="chromatic">Cromática</option>
         </select>
       </div>
       <div class="card">
@@ -160,40 +118,49 @@
       </div>
 
       <div class="card">
-        <div class="lab"><span>pitch snap</span><span class="val" id="snapV">80%</span></div>
+        <div class="lab"><span>nível do drone</span><span class="val" id="droneV">70%</span></div>
+        <input type="range" id="drone" min="0" max="1" step="0.01" value="0.7">
+      </div>
+      <div class="card">
+        <div class="lab"><span>reatividade (pad↔voz)</span><span class="val" id="reactV">55%</span></div>
+        <input type="range" id="react" min="0" max="1" step="0.01" value="0.55">
+      </div>
+
+      <div class="card">
+        <div class="lab"><span>seguir pitch da sala</span><span class="val" id="snapV">on</span></div>
         <input type="range" id="snap" min="0" max="1" step="0.01" value="0.8">
       </div>
       <div class="card">
-        <div class="lab"><span>harmonia</span></div>
-        <select id="harmony">
-          <option value="off">uníssono</option>
-          <option value="octave" selected>+ oitava</option>
-          <option value="fifth">+ quinta</option>
+        <div class="lab"><span>vozes (acorde)</span></div>
+        <select id="voicing">
+          <option value="unison">uníssono / oitavas</option>
+          <option value="fifth" selected>quintas</option>
+          <option value="octave">oitavas largas</option>
           <option value="triad">tríade da escala</option>
         </select>
       </div>
 
       <div class="card">
-        <div class="lab"><span>densidade</span><span class="val" id="densV">14 /s</span></div>
-        <input type="range" id="density" min="2" max="50" step="1" value="14">
+        <div class="lab"><span>brilho</span><span class="val" id="brightV">50%</span></div>
+        <input type="range" id="bright" min="0" max="1" step="0.01" value="0.5">
       </div>
       <div class="card">
-        <div class="lab"><span>tamanho do grão</span><span class="val" id="sizeV">90 ms</span></div>
-        <input type="range" id="size" min="20" max="260" step="1" value="90">
-      </div>
-
-      <div class="card">
-        <div class="lab"><span>dispersão</span><span class="val" id="spreadV">55%</span></div>
-        <input type="range" id="spread" min="0" max="1" step="0.01" value="0.55">
-      </div>
-      <div class="card">
-        <div class="lab"><span>limiar (gate)</span><span class="val" id="gateV">low</span></div>
-        <input type="range" id="gate" min="0.004" max="0.08" step="0.001" value="0.012">
+        <div class="lab"><span>movimento (vida própria)</span><span class="val" id="moveV">50%</span></div>
+        <input type="range" id="move" min="0" max="1" step="0.01" value="0.5">
       </div>
 
       <div class="card">
-        <div class="lab"><span>reverb</span><span class="val" id="revV">45%</span></div>
-        <input type="range" id="reverb" min="0" max="1" step="0.01" value="0.45">
+        <div class="lab"><span>respiração (envelope)</span><span class="val" id="envV">60%</span></div>
+        <input type="range" id="envsens" min="0" max="1" step="0.01" value="0.6">
+      </div>
+      <div class="card">
+        <div class="lab"><span>textura granular da sala</span><span class="val" id="texV">0%</span></div>
+        <input type="range" id="texture" min="0" max="1" step="0.01" value="0">
+      </div>
+
+      <div class="card">
+        <div class="lab"><span>reverb</span><span class="val" id="revV">55%</span></div>
+        <input type="range" id="reverb" min="0" max="1" step="0.01" value="0.55">
       </div>
       <div class="card">
         <div class="lab"><span>chorus</span><span class="val" id="chorV">35%</span></div>
@@ -202,7 +169,7 @@
 
       <div class="card">
         <div class="lab"><span>delay mix</span><span class="val" id="delV">30%</span></div>
-        <input type="range" id="delay" min="0" max="1" step="0.01" value="0.30">
+        <input type="range" id="delay" min="0" max="1" step="0.01" value="0.3">
       </div>
       <div class="card">
         <div class="lab"><span>delay feedback</span><span class="val" id="fbV">42%</span></div>
@@ -210,8 +177,8 @@
       </div>
 
       <div class="card full">
-        <div class="lab"><span>delay time</span><span class="val" id="dtV">420 ms</span></div>
-        <input type="range" id="dtime" min="60" max="1200" step="10" value="420">
+        <div class="lab"><span>delay time</span><span class="val" id="dtV">480 ms</span></div>
+        <input type="range" id="dtime" min="60" max="1200" step="10" value="480">
       </div>
     </div>
   </div>
@@ -224,440 +191,380 @@
 </div>
 
 <script>
-/* ============================================================
+/* =====================================================================
    RESONA — Ambient ReSynthesis
-   Live room audio -> circular buffer -> granular engine
-   -> pitch-tracked snap to scale -> chorus / delay / reverb
-   ============================================================ */
+   The CARRIER is a synthesizer (evolving pad). The room is a MODULATOR:
+   its amplitude makes the bed breathe, and a 16-band vocoder lets the
+   synth "speak" with the room's formants. The raw room is never heard
+   in the wet path — only synthesis shaped by it.
+   ===================================================================== */
 
 const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
 const SCALES = {
-  major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10],
-  harmonicMinor:[0,2,3,5,7,8,11], dorian:[0,2,3,5,7,9,10],
-  phrygian:[0,1,3,5,7,8,10], lydian:[0,2,4,6,7,9,11],
-  mixolydian:[0,2,4,5,7,9,10], pentaMajor:[0,2,4,7,9],
-  pentaMinor:[0,3,5,7,10], wholeTone:[0,2,4,6,8,10],
-  chromatic:[0,1,2,3,4,5,6,7,8,9,10,11]
+  major:[0,2,4,5,7,9,11], minor:[0,2,3,5,7,8,10], harmonicMinor:[0,2,3,5,7,8,11],
+  dorian:[0,2,3,5,7,9,10], phrygian:[0,1,3,5,7,8,10], lydian:[0,2,4,6,7,9,11],
+  mixolydian:[0,2,4,5,7,9,10], pentaMajor:[0,2,4,7,9], pentaMinor:[0,3,5,7,10],
+  wholeTone:[0,2,4,6,8,10]
+};
+const VOICINGS = {
+  unison:()=>[0,12,-12,24],
+  fifth:()=>[0,7,12,19],
+  octave:()=>[0,12,24,-12],
+  triad:(sc)=>{ const iv=SCALES[sc]; const t=(iv[2]!=null?iv[2]:4), f=(iv[4]!=null?iv[4]:7); return [0,t,f,12]; }
 };
 
-// ---- state controlled by UI ----
+const NBANDS = 16, BAND_LO = 160, BAND_HI = 6000;
+const VOC_MAKEUP = 9;
+
 const P = {
-  drywet:0.85, snap:0.8, harmony:'octave', density:14, size:0.09,
-  spread:0.55, gate:0.012, reverb:0.45, chorus:0.35, delay:0.30,
-  feedback:0.42, dtime:0.42, scale:'minor', root:2
+  drywet:1, drone:0.7, react:0.55, snap:0.8, voicing:'fifth', bright:0.5,
+  move:0.5, envsens:0.6, texture:0, reverb:0.55, chorus:0.35, delay:0.3,
+  feedback:0.42, dtime:0.48, scale:'minor', root:2, gate:0.012, size:0.09,
+  density:14, spread:0.55
 };
 
 let ctx, stream, micSrc, worklet, running=false;
 let ring=null, ringLen=0, ringWrite=0, ringSR=48000;
-// effect nodes
-let dryGain, wetGain, master, grainBus, chorusOut, delayNode, fbGain, fbTone,
-    delayWet, convolver, reverbWet, reverbDry;
-let analysisLevel=0, snappedMidi=null, snappedClarity=0;
-let curRatio=1, targetRatio=1;
-const chorusVoices=[];
-let hannCurve = makeHann(256);
+let analysisLevel=0, snappedMidi=null, snappedClarity=0, lastPitchPc=null, lastPitchTime=0;
+let curRatio=1, targetRatio=1, hannCurve=makeHann(256);
 
-function makeHann(n){
-  const a=new Float32Array(n);
-  for(let i=0;i<n;i++) a[i]=0.5-0.5*Math.cos(2*Math.PI*i/(n-1));
-  return a;
-}
+// graph nodes
+let master, masterComp, dryGain, wetOut, wetPre, carrierBus, carrierFilter, carrierPost,
+    padGain, vocGain, vocSum, modBus, textureGain, chorusOut, delayNode, fbGain, fbTone,
+    delayWet, convolver, reverbWet, reverbDry, filterLFO, filterLFODepth;
+const chordSlots=[], bands=[], chorusVoices=[];
+let curRootMidi=50;
 
-/* ---- the capture + analysis worklet (built from a blob, so the whole
-   app stays in one file and works offline) ---- */
+function makeHann(n){ const a=new Float32Array(n); for(let i=0;i<n;i++) a[i]=0.5-0.5*Math.cos(2*Math.PI*i/(n-1)); return a; }
+function mtof(m){ return 440*Math.pow(2,(m-69)/12); }
+
 const WORKLET_SRC = `
-class CaptureProcessor extends AudioWorkletProcessor {
-  constructor(){
-    super();
-    this.block = new Float32Array(1024);
-    this.idx = 0;
-    this.frame = 0;
-  }
-  detect(buf, sr){
-    const N = buf.length;
-    let rms = 0;
-    for(let i=0;i<N;i++){ const v=buf[i]; rms += v*v; }
-    rms = Math.sqrt(rms/N);
-    if(rms < 0.006) return {f0:-1, clarity:0, rms};
-    // trim near-silent edges
-    const thr = 0.18;
-    let r1=0, r2=N-1;
-    for(let i=0;i<N/2;i++){ if(Math.abs(buf[i])<thr){ r1=i; break; } }
-    for(let i=1;i<N/2;i++){ if(Math.abs(buf[N-i])<thr){ r2=N-i; break; } }
-    if(r2-r1 < 128) return {f0:-1, clarity:0, rms};
-    const n = r2-r1;
-    const c = new Float32Array(n);
-    for(let lag=0; lag<n; lag++){
-      let s=0;
-      for(let j=0;j<n-lag;j++) s += buf[r1+j]*buf[r1+j+lag];
-      c[lag]=s;
-    }
-    let d=0; while(d<n-1 && c[d]>c[d+1]) d++;
-    let maxv=-1, pos=-1;
-    for(let i=d;i<n;i++){ if(c[i]>maxv){ maxv=c[i]; pos=i; } }
-    if(pos<=0) return {f0:-1, clarity:0, rms};
-    // parabolic interpolation
-    const x1=c[pos-1]||0, x2=c[pos]||0, x3=c[pos+1]||0;
-    const den=(x1+x3-2*x2);
-    let T=pos; if(den) T = pos - 0.5*(x3-x1)/den;
-    const f0 = sr / T;
-    const clarity = c[0] ? maxv/c[0] : 0;
-    return {f0, clarity, rms};
-  }
-  process(inputs){
-    const ch = inputs[0][0];
-    if(!ch) return true;
-    for(let i=0;i<ch.length;i++){
-      this.block[this.idx++] = ch[i];
-      if(this.idx >= this.block.length){
-        const copy = this.block.slice(0);
-        let res = {f0:-1, clarity:0, rms:0};
-        if((this.frame++ & 1) === 0) res = this.detect(this.block, sampleRate);
-        else { let r=0; for(let k=0;k<this.block.length;k++) r+=this.block[k]*this.block[k]; res.rms=Math.sqrt(r/this.block.length); }
-        this.port.postMessage({samples:copy, f0:res.f0, clarity:res.clarity, rms:res.rms}, [copy.buffer]);
-        this.idx = 0;
-      }
-    }
-    return true;
-  }
+class CaptureProcessor extends AudioWorkletProcessor{
+  constructor(){super();this.block=new Float32Array(1024);this.idx=0;this.frame=0;}
+  detect(buf,sr){const N=buf.length;let rms=0;for(let i=0;i<N;i++){const v=buf[i];rms+=v*v;}rms=Math.sqrt(rms/N);
+    if(rms<0.006)return{f0:-1,clarity:0,rms};const thr=0.18;let r1=0,r2=N-1;
+    for(let i=0;i<N/2;i++){if(Math.abs(buf[i])<thr){r1=i;break;}}
+    for(let i=1;i<N/2;i++){if(Math.abs(buf[N-i])<thr){r2=N-i;break;}}
+    if(r2-r1<128)return{f0:-1,clarity:0,rms};const n=r2-r1;const c=new Float32Array(n);
+    for(let lag=0;lag<n;lag++){let s=0;for(let j=0;j<n-lag;j++)s+=buf[r1+j]*buf[r1+j+lag];c[lag]=s;}
+    let d=0;while(d<n-1&&c[d]>c[d+1])d++;let mv=-1,pos=-1;for(let i=d;i<n;i++){if(c[i]>mv){mv=c[i];pos=i;}}
+    if(pos<=0)return{f0:-1,clarity:0,rms};const x1=c[pos-1]||0,x2=c[pos]||0,x3=c[pos+1]||0;
+    const den=(x1+x3-2*x2);let T=pos;if(den)T=pos-0.5*(x3-x1)/den;
+    return{f0:sr/T,clarity:c[0]?mv/c[0]:0,rms};}
+  process(inputs){const ch=inputs[0][0];if(!ch)return true;
+    for(let i=0;i<ch.length;i++){this.block[this.idx++]=ch[i];
+      if(this.idx>=this.block.length){const copy=this.block.slice(0);let res={f0:-1,clarity:0,rms:0};
+        if((this.frame++&1)===0)res=this.detect(this.block,sampleRate);
+        else{let r=0;for(let k=0;k<this.block.length;k++)r+=this.block[k]*this.block[k];res.rms=Math.sqrt(r/this.block.length);}
+        this.port.postMessage({samples:copy,f0:res.f0,clarity:res.clarity,rms:res.rms},[copy.buffer]);this.idx=0;}}
+    return true;}
 }
-registerProcessor('capture', CaptureProcessor);
+registerProcessor('capture',CaptureProcessor);
 `;
 
 async function start(){
   ctx = new (window.AudioContext||window.webkitAudioContext)();
   await ctx.resume();
   ringSR = ctx.sampleRate;
-  ringLen = Math.floor(ringSR * 5);          // 5 second room memory
-  ring = new Float32Array(ringLen);
-  ringWrite = 0;
+  ringLen = Math.floor(ringSR*5); ring = new Float32Array(ringLen); ringWrite=0;
 
   stream = await navigator.mediaDevices.getUserMedia({
     audio:{ echoCancellation:false, noiseSuppression:false, autoGainControl:false, channelCount:1 }
   });
   micSrc = ctx.createMediaStreamSource(stream);
 
-  // Load the worklet from a real same-origin file (blob: URLs are rejected
-  // by Safari/iOS and some servers). Fall back to the inline blob if needed.
-  try {
-    await ctx.audioWorklet.addModule('capture-worklet.js');
-  } catch(e1) {
-    const blobUrl = URL.createObjectURL(new Blob([WORKLET_SRC], {type:'application/javascript'}));
-    await ctx.audioWorklet.addModule(blobUrl);
-  }
-  worklet = new AudioWorkletNode(ctx, 'capture', {numberOfOutputs:0});
+  try { await ctx.audioWorklet.addModule('capture-worklet.js'); }
+  catch(e){ const u=URL.createObjectURL(new Blob([WORKLET_SRC],{type:'application/javascript'})); await ctx.audioWorklet.addModule(u); }
+  worklet = new AudioWorkletNode(ctx,'capture',{numberOfOutputs:0});
   worklet.port.onmessage = onBlock;
   micSrc.connect(worklet);
 
   buildGraph();
   applyAll();
-  running = true;
+  setChord(curRootMidi);
+  running=true;
   scheduler();
+  evolveLoop();
 }
 
 function onBlock(e){
-  const {samples, f0, clarity, rms} = e.data;
-  // write into ring buffer
-  const n = samples.length;
-  if(ringWrite + n <= ringLen){
-    ring.set(samples, ringWrite);
-  } else {
-    const first = ringLen - ringWrite;
-    ring.set(samples.subarray(0, first), ringWrite);
-    ring.set(samples.subarray(first), 0);
-  }
-  ringWrite = (ringWrite + n) % ringLen;
+  const {samples,f0,clarity,rms} = e.data;
+  const n=samples.length;
+  if(ringWrite+n<=ringLen){ ring.set(samples,ringWrite); }
+  else { const first=ringLen-ringWrite; ring.set(samples.subarray(0,first),ringWrite); ring.set(samples.subarray(first),0); }
+  ringWrite=(ringWrite+n)%ringLen;
 
-  // smoothed level
   analysisLevel = analysisLevel*0.6 + rms*0.4;
 
-  // pitch -> snap (confidence gated)
-  if(f0 > 50 && f0 < 1400 && clarity > 0.93 && rms > P.gate){
+  // breathing: input envelope -> wet bed level
+  if(wetPre){
+    const lvl = Math.min(1, analysisLevel*8);
+    const g = 0.16 + P.envsens*lvl;
+    wetPre.gain.setTargetAtTime(g, ctx.currentTime, 0.08);
+  }
+
+  // pitch -> snapped scale note -> chord root (+ grain ratio for texture)
+  if(f0>50 && f0<1400 && clarity>0.93 && rms>P.gate){
     const midi = 69 + 12*Math.log2(f0/440);
     const snapped = snapToScale(midi);
-    snappedMidi = snapped;
-    snappedClarity = clarity;
-    const snappedFreq = 440*Math.pow(2,(snapped-69)/12);
-    const fullRatio = snappedFreq / f0;
-    // snap strength: 0 = keep room pitch, 1 = fully snapped
-    targetRatio = Math.pow(fullRatio, P.snap);
+    snappedMidi = snapped; snappedClarity = clarity;
+    lastPitchPc = ((snapped%12)+12)%12; lastPitchTime = ctx.currentTime;
+    const sf = mtof(snapped);
+    targetRatio = Math.pow(sf/f0, 1);   // for texture grains
   } else {
-    snappedClarity *= 0.9;          // let the note fade visually
-    targetRatio = targetRatio*0.95 + 1*0.05; // gently relax toward unity when unsure
+    snappedClarity *= 0.9;
+    targetRatio = targetRatio*0.95 + 0.05;
   }
 }
 
 function snapToScale(midi){
-  const intervals = SCALES[P.scale];
-  const oct = Math.floor(midi/12);
-  const within = midi - oct*12;          // 0..12 float
-  // candidate scale pitch classes (also check octave wrap)
-  let best=null, bestD=1e9;
-  for(let o=-1;o<=1;o++){
-    for(const iv of intervals){
-      const pc = (P.root + iv) % 12;
-      const cand = oct*12 + pc + o*12;
-      const dd = Math.abs(cand - midi);
-      if(dd < bestD){ bestD=dd; best=cand; }
-    }
-  }
+  const iv=SCALES[P.scale]; const oct=Math.floor(midi/12); let best=null,bd=1e9;
+  for(let o=-1;o<=1;o++) for(const i of iv){ const pc=(P.root+i)%12; const c=oct*12+pc+o*12; const dd=Math.abs(c-midi); if(dd<bd){bd=dd;best=c;} }
   return Math.round(best);
 }
 
-/* ---------- audio graph ---------- */
+/* ---------------- audio graph ---------------- */
 function buildGraph(){
-  chorusVoices.length = 0;
+  chordSlots.length=0; bands.length=0; chorusVoices.length=0;
+
   master = ctx.createGain(); master.gain.value=0.9;
-  master.connect(ctx.destination);
+  masterComp = ctx.createDynamicsCompressor();
+  masterComp.threshold.value=-6; masterComp.knee.value=8; masterComp.ratio.value=8;
+  masterComp.attack.value=0.004; masterComp.release.value=0.25;
+  master.connect(masterComp); masterComp.connect(ctx.destination);
 
-  // dry path: raw mic -> dryGain -> master
-  dryGain = ctx.createGain();
-  micSrc.connect(dryGain); dryGain.connect(master);
+  // DRY = raw room
+  dryGain = ctx.createGain(); micSrc.connect(dryGain); dryGain.connect(master);
 
-  // wet path begins at grainBus (grains connect here)
-  grainBus = ctx.createGain(); grainBus.gain.value=1;
+  // ---- CARRIER: synth pad ----
+  carrierBus = ctx.createGain(); carrierBus.gain.value=0.5;
+  carrierFilter = ctx.createBiquadFilter(); carrierFilter.type='lowpass';
+  carrierFilter.frequency.value=1200; carrierFilter.Q.value=0.6;
+  carrierPost = ctx.createGain(); carrierPost.gain.value=1;
+  carrierBus.connect(carrierFilter); carrierFilter.connect(carrierPost);
+  // slow filter LFO (life of its own)
+  filterLFO = ctx.createOscillator(); filterLFO.frequency.value=0.08;
+  filterLFODepth = ctx.createGain(); filterLFODepth.gain.value=400;
+  filterLFO.connect(filterLFODepth); filterLFODepth.connect(carrierFilter.frequency); filterLFO.start();
 
-  // --- chorus ---
-  chorusOut = ctx.createGain();
-  const chDry = ctx.createGain(); chDry.gain.value=0.7;
-  grainBus.connect(chDry); chDry.connect(chorusOut);
-  [[0.022,0.55,0.0035],[0.017,0.37,0.0028]].forEach(([base,rate,depth])=>{
-    const dl = ctx.createDelay(0.1); dl.delayTime.value=base;
-    const lfo = ctx.createOscillator(); lfo.frequency.value=rate;
-    const lg = ctx.createGain(); lg.gain.value=depth;
-    lfo.connect(lg); lg.connect(dl.delayTime); lfo.start();
-    const wet = ctx.createGain(); wet.gain.value=0.5;
-    grainBus.connect(dl); dl.connect(wet); wet.connect(chorusOut);
-    dl._lfoGain = lg; chorusVoices.push(dl);
-  });
+  buildVoices();
 
-  // --- delay (feedback w/ tone) ---
-  delayNode = ctx.createDelay(2.0); delayNode.delayTime.value=P.dtime;
-  fbGain = ctx.createGain(); fbGain.gain.value=P.feedback;
-  fbTone = ctx.createBiquadFilter(); fbTone.type='lowpass'; fbTone.frequency.value=2600;
-  delayNode.connect(fbTone); fbTone.connect(fbGain); fbGain.connect(delayNode);
-  delayWet = ctx.createGain();
-  chorusOut.connect(delayNode); delayNode.connect(delayWet);
-  // sum of chorus(dry-of-delay) + delay wet feeds reverb stage
-  const preReverb = ctx.createGain();
-  chorusOut.connect(preReverb);
-  delayWet.connect(preReverb);
+  // ---- wet pre (breathing bus) ----
+  wetPre = ctx.createGain(); wetPre.gain.value=0.16;
 
-  // --- reverb (procedural IR) ---
-  convolver = ctx.createConvolver();
-  convolver.buffer = makeIR(4.0, 2.6);
-  reverbWet = ctx.createGain();
-  reverbDry = ctx.createGain();
-  const wetSumNode = ctx.createGain();
-  preReverb.connect(reverbDry);  reverbDry.connect(wetSumNode);
-  preReverb.connect(convolver);  convolver.connect(reverbWet);  reverbWet.connect(wetSumNode);
+  // pad-direct path (pure evolving synth)
+  padGain = ctx.createGain(); padGain.gain.value=0.5;
+  carrierPost.connect(padGain); padGain.connect(wetPre);
 
-  // final wet level -> master
-  wetGain = ctx.createGain();
-  wetSumNode.connect(wetGain);   wetGain.connect(master);
-}
-
-function makeIR(seconds, decay){
-  const len = Math.floor(ringSR*seconds);
-  const buf = ctx.createBuffer(2, len, ringSR);
-  for(let ch=0;ch<2;ch++){
-    const d = buf.getChannelData(ch);
-    for(let i=0;i<len;i++){
-      const t = i/len;
-      d[i] = (Math.random()*2-1) * Math.pow(1-t, decay);
-    }
+  // ---- VOCODER (room formants -> carrier) ----
+  modBus = ctx.createGain();
+  const modHP = ctx.createBiquadFilter(); modHP.type='highpass'; modHP.frequency.value=120;
+  micSrc.connect(modHP); modHP.connect(modBus);
+  vocSum = ctx.createGain(); vocSum.gain.value=1;
+  const shaper = makeAbsShaper();
+  for(let b=0;b<NBANDS;b++){
+    const f = BAND_LO*Math.pow(BAND_HI/BAND_LO, b/(NBANDS-1));
+    const Q = 6;
+    // carrier band
+    const cBP=ctx.createBiquadFilter(); cBP.type='bandpass'; cBP.frequency.value=f; cBP.Q.value=Q;
+    const cG=ctx.createGain(); cG.gain.value=0;
+    carrierPost.connect(cBP); cBP.connect(cG); cG.connect(vocSum);
+    // modulator band -> envelope follower -> drives cG.gain
+    const mBP=ctx.createBiquadFilter(); mBP.type='bandpass'; mBP.frequency.value=f; mBP.Q.value=Q;
+    const rect=ctx.createWaveShaper(); rect.curve=shaper;
+    const lp=ctx.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=22;
+    const sens=ctx.createGain(); sens.gain.value=VOC_MAKEUP;
+    modBus.connect(mBP); mBP.connect(rect); rect.connect(lp); lp.connect(sens); sens.connect(cG.gain);
+    bands.push({cG,sens});
   }
-  return buf;
+  vocGain = ctx.createGain(); vocGain.gain.value=0.5;
+  vocSum.connect(vocGain); vocGain.connect(wetPre);
+
+  // ---- granular room texture (optional, default 0) ----
+  textureGain = ctx.createGain(); textureGain.gain.value=0;
+  textureGain.connect(wetPre);
+
+  // ---- FX: chorus -> delay -> reverb ----
+  chorusOut = ctx.createGain();
+  const chDry=ctx.createGain(); chDry.gain.value=0.7; wetPre.connect(chDry); chDry.connect(chorusOut);
+  [[0.022,0.55,0.0035],[0.017,0.37,0.0028]].forEach(([base,rate,depth])=>{
+    const dl=ctx.createDelay(0.1); dl.delayTime.value=base;
+    const lfo=ctx.createOscillator(); lfo.frequency.value=rate;
+    const lg=ctx.createGain(); lg.gain.value=depth; lfo.connect(lg); lg.connect(dl.delayTime); lfo.start();
+    const wet=ctx.createGain(); wet.gain.value=0.5;
+    wetPre.connect(dl); dl.connect(wet); wet.connect(chorusOut);
+    dl._lfoGain=lg; chorusVoices.push(dl);
+  });
+  delayNode=ctx.createDelay(2.0); delayNode.delayTime.value=P.dtime;
+  fbGain=ctx.createGain(); fbGain.gain.value=P.feedback;
+  fbTone=ctx.createBiquadFilter(); fbTone.type='lowpass'; fbTone.frequency.value=2600;
+  delayNode.connect(fbTone); fbTone.connect(fbGain); fbGain.connect(delayNode);
+  delayWet=ctx.createGain(); chorusOut.connect(delayNode); delayNode.connect(delayWet);
+  const preReverb=ctx.createGain(); chorusOut.connect(preReverb); delayWet.connect(preReverb);
+
+  convolver=ctx.createConvolver(); convolver.buffer=makeIR(4.0,2.6);
+  reverbWet=ctx.createGain(); reverbDry=ctx.createGain();
+  const wetSumNode=ctx.createGain();
+  preReverb.connect(reverbDry); reverbDry.connect(wetSumNode);
+  preReverb.connect(convolver); convolver.connect(reverbWet); reverbWet.connect(wetSumNode);
+
+  wetOut=ctx.createGain(); wetSumNode.connect(wetOut); wetOut.connect(master);
 }
 
-/* ---------- granular scheduler ---------- */
-let nextGrain = 0;
+function buildVoices(){
+  for(let s=0;s<4;s++){
+    const slot={oscs:[], gain:ctx.createGain(), pan:(ctx.createStereoPanner?ctx.createStereoPanner():null)};
+    slot.gain.gain.value=0.22;
+    if(slot.pan){ slot.gain.connect(slot.pan); slot.pan.connect(carrierBus);
+      const plfo=ctx.createOscillator(); plfo.frequency.value=0.03+Math.random()*0.06;
+      const pdep=ctx.createGain(); pdep.gain.value=0.6; plfo.connect(pdep); pdep.connect(slot.pan.pan); plfo.start();
+    } else slot.gain.connect(carrierBus);
+    [ -1, 0, 1 ].forEach(k=>{
+      const o=ctx.createOscillator(); o.type='sawtooth'; o.detune.value=k*(6+Math.random()*6);
+      const g=ctx.createGain(); g.gain.value=0.3; o.connect(g); g.connect(slot.gain); o.start(); slot.oscs.push(o);
+    });
+    const sub=ctx.createOscillator(); sub.type='sine'; const sg=ctx.createGain(); sg.gain.value=0.45;
+    sub.connect(sg); sg.connect(slot.gain); sub.start(); slot.sub=sub; slot.oscs.push(sub);
+    chordSlots.push(slot);
+  }
+}
+
+function makeAbsShaper(){ const n=512,c=new Float32Array(n); for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.abs(x); } return c; }
+function makeIR(sec,dec){ const len=Math.floor(ringSR*sec); const buf=ctx.createBuffer(2,len,ringSR);
+  for(let ch=0;ch<2;ch++){ const d=buf.getChannelData(ch); for(let i=0;i<len;i++){ const t=i/len; d[i]=(Math.random()*2-1)*Math.pow(1-t,dec); } } return buf; }
+
+function setChord(rootMidi){
+  if(!chordSlots.length) return;
+  const v=VOICINGS[P.voicing](P.scale);
+  chordSlots.forEach((slot,i)=>{
+    const semis=v[i%v.length]+Math.floor(i/v.length)*12;
+    const f=mtof(rootMidi+semis);
+    slot.oscs.forEach(o=>{ const tf=(o===slot.sub)?f/2:f; o.frequency.setTargetAtTime(tf, ctx.currentTime, 0.4); });
+  });
+}
+
+/* slow evolution = its own life */
+function evolveLoop(){
+  if(!running) return;
+  const now=ctx.currentTime;
+  let pc;
+  if(P.snap>0.3 && lastPitchPc!=null && (now-lastPitchTime)<4){ pc=lastPitchPc; }
+  else {
+    // gentle random walk through scale degrees around UI root
+    const iv=SCALES[P.scale]; const deg=iv[Math.floor(Math.random()*iv.length)];
+    pc=(P.root+deg)%12;
+  }
+  curRootMidi = 36 + pc;
+  setChord(curRootMidi);
+  const wait = 3000 + (1-P.move)*7000 + Math.random()*2000;
+  setTimeout(evolveLoop, wait);
+}
+
+/* granular texture scheduler (room grains, key-locked) */
+let nextGrain=0;
 function scheduler(){
   if(!running) return;
-  const now = ctx.currentTime;
-  if(nextGrain < now) nextGrain = now;
-  curRatio = curRatio + (targetRatio - curRatio)*0.25;
-  const ahead = now + 0.12;
-  const interval = 1/P.density;
-  const offsets = harmonyOffsets();
-  while(nextGrain < ahead){
-    if(analysisLevel > P.gate){
-      for(const off of offsets) spawnGrain(nextGrain, off, offsets.length);
+  const now=ctx.currentTime; if(nextGrain<now) nextGrain=now;
+  curRatio += (targetRatio-curRatio)*0.25;
+  if(P.texture>0.001){
+    const ahead=now+0.12, interval=1/P.density;
+    while(nextGrain<ahead){
+      if(analysisLevel>P.gate) spawnGrain(nextGrain);
+      nextGrain += interval*(0.6+Math.random()*0.8);
     }
-    nextGrain += interval*(0.6 + Math.random()*0.8);
-  }
+  } else nextGrain=now;
   requestAnimationFrame(scheduler);
 }
-
-function harmonyOffsets(){
-  if(P.harmony==='off') return [0];
-  if(P.harmony==='octave') return [0,12];
-  if(P.harmony==='fifth') return [0,7];
-  if(P.harmony==='triad'){
-    const iv=SCALES[P.scale];
-    const third = iv[2]!==undefined?iv[2]:4;
-    const fifth = iv[4]!==undefined?iv[4]:7;
-    return [0, third, fifth];
-  }
-  return [0];
+function spawnGrain(when){
+  const dur=P.size, gs=Math.floor(dur*ringSR); if(gs<64) return;
+  const back=Math.floor(ringSR*(0.15+Math.random()*1.6*P.spread))+gs;
+  const readStart=(ringWrite-back+ringLen*4)%ringLen;
+  const gbuf=ctx.createBuffer(1,gs,ringSR); const gd=gbuf.getChannelData(0);
+  for(let i=0;i<gs;i++) gd[i]=ring[(readStart+i)%ringLen];
+  const sN=ctx.createBufferSource(); sN.buffer=gbuf; sN.playbackRate.value=curRatio;
+  const env=ctx.createGain(); env.gain.value=0; const playDur=dur/curRatio; const amp=0.5;
+  const curve=new Float32Array(hannCurve.length); for(let i=0;i<curve.length;i++) curve[i]=hannCurve[i]*amp;
+  try{ env.gain.setValueCurveAtTime(curve,when,playDur); }catch(e){}
+  const pan=ctx.createStereoPanner?ctx.createStereoPanner():null; if(pan) pan.pan.value=(Math.random()*2-1)*P.spread;
+  sN.connect(env); if(pan){env.connect(pan);pan.connect(textureGain);} else env.connect(textureGain);
+  sN.start(when); sN.stop(when+playDur+0.02);
+  sN.onended=()=>{ sN.disconnect(); env.disconnect(); if(pan) pan.disconnect(); };
 }
 
-function spawnGrain(when, semis, voices){
-  const dur = P.size;
-  const grainSamples = Math.floor(dur*ringSR);
-  if(grainSamples < 64) return;
-  // pick a read position somewhere in the recent past, with spread jitter
-  const back = Math.floor(ringSR*(0.15 + Math.random()*1.6*P.spread)) + grainSamples;
-  let readStart = (ringWrite - back + ringLen*4) % ringLen;
-  const gbuf = ctx.createBuffer(1, grainSamples, ringSR);
-  const gd = gbuf.getChannelData(0);
-  for(let i=0;i<grainSamples;i++){
-    gd[i] = ring[(readStart + i) % ringLen];
-  }
-  const sNode = ctx.createBufferSource();
-  sNode.buffer = gbuf;
-  const ratio = curRatio * Math.pow(2, semis/12);
-  sNode.playbackRate.value = ratio;
-
-  const env = ctx.createGain();
-  env.gain.value = 0;
-  const playDur = dur / ratio;
-  const amp = 0.42 / Math.sqrt(voices);
-  const curve = new Float32Array(hannCurve.length);
-  for(let i=0;i<curve.length;i++) curve[i]=hannCurve[i]*amp;
-  try { env.gain.setValueCurveAtTime(curve, when, playDur); } catch(e){}
-
-  const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
-  if(pan) pan.pan.value = (Math.random()*2-1)*P.spread;
-
-  sNode.connect(env);
-  if(pan){ env.connect(pan); pan.connect(grainBus); }
-  else env.connect(grainBus);
-
-  sNode.start(when);
-  sNode.stop(when + playDur + 0.02);
-  sNode.onended = ()=>{ sNode.disconnect(); env.disconnect(); if(pan) pan.disconnect(); };
-}
-
-/* ---------- apply parameters ---------- */
+/* ---------------- params ---------------- */
 function applyAll(){
   if(!ctx) return;
-  const w = P.drywet;                         // equal-power crossfade
-  dryGain.gain.value = Math.cos(w*Math.PI/2);
-  wetGain.gain.value = Math.sin(w*Math.PI/2);
-  // chorus depth
-  const cd = P.chorus;
-  chorusVoices.forEach((dl,i)=>{ dl._lfoGain.gain.value = (i?0.0028:0.0035)*(0.2+cd*1.8); });
-  // delay
+  const w=P.drywet;
+  dryGain.gain.value=Math.cos(w*Math.PI/2);
+  wetOut.gain.value=Math.sin(w*Math.PI/2);
+  padGain.gain.value=P.drone*(1-P.react);
+  vocGain.gain.value=P.drone*P.react;
+  carrierFilter.frequency.value=400+P.bright*3600;
+  filterLFODepth.gain.value=120+P.move*900;
+  chorusVoices.forEach((dl,i)=>{ dl._lfoGain.gain.value=(i?0.0028:0.0035)*(0.2+P.chorus*1.8); });
   delayNode.delayTime.setTargetAtTime(P.dtime, ctx.currentTime, 0.05);
-  fbGain.gain.value = P.feedback;
-  delayWet.gain.value = P.delay;
-  // reverb
-  reverbWet.gain.value = P.reverb;
-  reverbDry.gain.value = 1 - P.reverb*0.5;
+  fbGain.gain.value=P.feedback; delayWet.gain.value=P.delay;
+  reverbWet.gain.value=P.reverb; reverbDry.gain.value=1-P.reverb*0.5;
+  textureGain.gain.setTargetAtTime(P.texture*0.9, ctx.currentTime, 0.1);
 }
 
-function stop(){
-  running=false;
-  if(stream) stream.getTracks().forEach(t=>t.stop());
-  if(ctx) ctx.close();
-  ctx=null;
-}
+function stop(){ running=false; if(stream) stream.getTracks().forEach(t=>t.stop()); if(ctx) ctx.close(); ctx=null; }
 
-/* ================= UI ================= */
-const $ = id => document.getElementById(id);
-function bind(id, key, fmt, transform){
-  const el=$(id), v=$(id+'V');
-  el.addEventListener('input', ()=>{
-    let val = parseFloat(el.value);
-    P[key] = transform? transform(val):val;
-    if(v) v.textContent = fmt(val);
-    applyAll();
-  });
-}
+/* ---------------- UI ---------------- */
+const $=id=>document.getElementById(id);
+function bind(id,key,fmt,tx){ const el=$(id),v=$(id+'V');
+  el.addEventListener('input',()=>{ let val=parseFloat(el.value); P[key]=tx?tx(val):val; if(v)v.textContent=fmt(val); applyAll(); }); }
 bind('drywet','drywet',()=>'');
-bind('snap','snap',v=>Math.round(v*100)+'%');
-bind('density','density',v=>Math.round(v)+' /s');
-bind('size','size',v=>Math.round(v)+' ms', v=>v/1000);
-bind('spread','spread',v=>Math.round(v*100)+'%');
-bind('gate','gate',v=> v<0.02?'low':(v<0.05?'mid':'high'));
+bind('drone','drone',v=>Math.round(v*100)+'%');
+bind('react','react',v=>Math.round(v*100)+'%');
+bind('snap','snap',v=>v<0.3?'off':Math.round(v*100)+'%');
+bind('bright','bright',v=>Math.round(v*100)+'%');
+bind('move','move',v=>Math.round(v*100)+'%');
+bind('envsens','envsens',v=>Math.round(v*100)+'%');
+bind('texture','texture',v=>Math.round(v*100)+'%');
 bind('reverb','reverb',v=>Math.round(v*100)+'%');
 bind('chorus','chorus',v=>Math.round(v*100)+'%');
 bind('delay','delay',v=>Math.round(v*100)+'%');
 bind('feedback','feedback',v=>Math.round(v*100)+'%');
-bind('dtime','dtime',v=>Math.round(v)+' ms', v=>v/1000);
+bind('dtime','dtime',v=>Math.round(v)+' ms',v=>v/1000);
 $('scale').addEventListener('change',e=>P.scale=e.target.value);
 $('root').addEventListener('change',e=>P.root=NOTES.indexOf(e.target.value));
-$('harmony').addEventListener('change',e=>P.harmony=e.target.value);
+$('voicing').addEventListener('change',e=>{P.voicing=e.target.value; setChord(curRootMidi);});
 
-const powerBtn=$('power'), led=$('led'), msg=$('msg');
-powerBtn.addEventListener('click', async ()=>{
+const powerBtn=$('power'),led=$('led'),msg=$('msg');
+powerBtn.addEventListener('click',async()=>{
   if(running){ stop(); powerBtn.textContent='ligar microfone'; powerBtn.classList.remove('live'); led.classList.remove('on'); msg.textContent='parado'; msg.classList.remove('err'); return; }
   msg.textContent='a pedir acesso ao microfone…'; msg.classList.remove('err');
-  try{
-    await start();
-    powerBtn.textContent='a tocar — parar';
-    powerBtn.classList.add('live'); led.classList.add('on');
-    msg.textContent='a transformar o som da sala';
-  }catch(err){
-    msg.textContent='erro: '+(err.message||err)+' — precisa de HTTPS e permissão';
-    msg.classList.add('err');
-    running=false;
-  }
+  try{ await start(); powerBtn.textContent='a tocar — parar'; powerBtn.classList.add('live'); led.classList.add('on'); msg.textContent='síntese a reagir à sala'; }
+  catch(err){ msg.textContent='erro: '+(err.message||err); msg.classList.add('err'); running=false; }
 });
 
-/* ---------- visualiser ---------- */
-const cv=$('cv'), g=cv.getContext('2d');
-let particles=[];
-function resize(){ const r=cv.getBoundingClientRect(); cv.width=r.width*devicePixelRatio; cv.height=r.height*devicePixelRatio; g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0); }
-addEventListener('resize',resize); resize();
-
+/* ---------------- visualiser ---------------- */
+const cv=$('cv'),g=cv.getContext('2d'); let particles=[];
+function resize(){ const r=cv.getBoundingClientRect(); cv.width=r.width*devicePixelRatio; cv.height=r.height*devicePixelRatio; g.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);} addEventListener('resize',resize); resize();
 function draw(){
-  const w=cv.width/devicePixelRatio, h=cv.height/devicePixelRatio;
-  g.clearRect(0,0,w,h);
-  // level ring
-  const lvl=Math.min(1, analysisLevel*9);
-  const cx=w/2, cy=h/2;
-  g.lineWidth=2;
-  for(let i=0;i<3;i++){
-    const r=20+i*18+lvl*40;
-    g.beginPath(); g.arc(cx,cy,r,0,Math.PI*2);
-    g.strokeStyle=`rgba(63,223,208,${(0.16-i*0.04)*(0.3+lvl)})`; g.stroke();
-  }
-  // spawn particles on energy
-  if(running && analysisLevel>P.gate && Math.random()<lvl){
-    particles.push({x:cx+(Math.random()*2-1)*40,y:cy+(Math.random()*2-1)*20,
-      vx:(Math.random()*2-1)*0.6, vy:-0.3-Math.random()*0.8, life:1,
-      amber: snappedClarity>0.4 && Math.random()<0.5});
+  const w=cv.width/devicePixelRatio,h=cv.height/devicePixelRatio; g.clearRect(0,0,w,h);
+  const lvl=Math.min(1,analysisLevel*9),cx=w/2,cy=h/2; g.lineWidth=2;
+  for(let i=0;i<3;i++){ const r=20+i*18+lvl*40; g.beginPath(); g.arc(cx,cy,r,0,Math.PI*2);
+    g.strokeStyle='rgba(63,223,208,'+((0.16-i*0.04)*(0.3+lvl))+')'; g.stroke(); }
+  if(running && Math.random()<0.25+lvl){
+    particles.push({x:cx+(Math.random()*2-1)*40,y:cy+(Math.random()*2-1)*20,vx:(Math.random()*2-1)*0.6,vy:-0.3-Math.random()*0.8,life:1,amber:snappedClarity>0.4&&Math.random()<0.5});
   }
   particles=particles.filter(p=>p.life>0);
-  particles.forEach(p=>{
-    p.x+=p.vx; p.y+=p.vy; p.life-=0.012;
-    g.beginPath(); g.arc(p.x,p.y,1.6,0,Math.PI*2);
-    g.fillStyle = p.amber? `rgba(255,196,90,${p.life*0.8})` : `rgba(63,223,208,${p.life*0.7})`;
-    g.fill();
-  });
-  // note readout
-  const noteEl=$('note'), subEl=$('sub');
+  particles.forEach(p=>{ p.x+=p.vx;p.y+=p.vy;p.life-=0.012; g.beginPath(); g.arc(p.x,p.y,1.6,0,Math.PI*2);
+    g.fillStyle=(p.amber?'rgba(255,196,90,':'rgba(63,223,208,')+(p.life*0.75)+')'; g.fill(); });
+  const noteEl=$('note'),subEl=$('sub');
   if(running){
-    if(snappedMidi!=null && snappedClarity>0.35){
-      const nm=NOTES[((snappedMidi%12)+12)%12];
-      const oct=Math.floor(snappedMidi/12)-1;
-      noteEl.textContent=nm+oct; noteEl.classList.remove('idle');
-      subEl.textContent='snap → '+P.scale+' / '+NOTES[P.root];
-    } else {
-      noteEl.textContent='~'; noteEl.classList.add('idle');
-      subEl.textContent=analysisLevel>P.gate?'textura (sem pitch claro)':'a ouvir…';
-    }
+    const pc=((curRootMidi%12)+12)%12;
+    noteEl.textContent=NOTES[pc]; noteEl.classList.remove('idle');
+    if(snappedMidi!=null && snappedClarity>0.35) subEl.textContent='a seguir a sala → '+P.scale;
+    else subEl.textContent='vida própria → '+P.scale+' / '+NOTES[P.root];
   }
   requestAnimationFrame(draw);
 }
 draw();
 
-/* ---------- PWA service worker ---------- */
-if('serviceWorker' in navigator){
-  addEventListener('load', ()=> navigator.serviceWorker.register('sw.js').catch(()=>{}));
-}
+if('serviceWorker' in navigator){ addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
 </script>
 </body>
 </html>
