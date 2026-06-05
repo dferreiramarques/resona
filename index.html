@@ -337,8 +337,14 @@ async function start(){
   });
   micSrc = ctx.createMediaStreamSource(stream);
 
-  const blobUrl = URL.createObjectURL(new Blob([WORKLET_SRC], {type:'application/javascript'}));
-  await ctx.audioWorklet.addModule(blobUrl);
+  // Load the worklet from a real same-origin file (blob: URLs are rejected
+  // by Safari/iOS and some servers). Fall back to the inline blob if needed.
+  try {
+    await ctx.audioWorklet.addModule('capture-worklet.js');
+  } catch(e1) {
+    const blobUrl = URL.createObjectURL(new Blob([WORKLET_SRC], {type:'application/javascript'}));
+    await ctx.audioWorklet.addModule(blobUrl);
+  }
   worklet = new AudioWorkletNode(ctx, 'capture', {numberOfOutputs:0});
   worklet.port.onmessage = onBlock;
   micSrc.connect(worklet);
