@@ -1,6 +1,6 @@
 # Builds the desktop installers (Windows .exe + portable .zip, macOS .dmg, Linux AppImage)
 # and attaches them to a published GitHub Release. Run it by pushing a version tag, e.g.:
-#   git tag v1.0.2 && git push origin v1.0.2
+#   git tag v1.0.4 && git push origin v1.0.4   (the version comes from the tag)
 name: desktop
 
 on:
@@ -35,6 +35,10 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
+      # the tag is the single source of truth for the version (v1.2.3 -> 1.2.3),
+      # so electron-builder always publishes into the release that was just created
+      - run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version
+        shell: bash
       - run: npx electron-builder --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

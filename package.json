@@ -31,13 +31,17 @@
       "icon-192.png",
       "icon-512.png",
       "icon-maskable.png",
-      "desktop/main.js"
+      "desktop/main.js",
+      "desktop/preload.js"
     ],
     "directories": {
       "output": "dist"
     },
     "win": {
-      "target": ["nsis", "zip"],
+      "target": [
+        "nsis",
+        "zip"
+      ],
       "icon": "icon-512.png",
       "legalTrademarks": "RESONA"
     },
@@ -72,5 +76,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/dferreiramarques/resona.git"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.12"
   }
 }

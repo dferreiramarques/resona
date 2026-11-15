@@ -92,6 +92,9 @@
   .arpkeys button.on{background:rgba(63,223,208,.14);border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 14px rgba(63,223,208,.25)}
   .arpkeys button.root b::after{content:'';display:block;width:4px;height:4px;border-radius:50%;background:currentColor;margin:3px auto 0}
   .help{font-size:11px;line-height:1.6;color:var(--txt-dim);margin:14px 0 0}
+  .upd{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--txt)}
+  .upd span{flex:1;min-width:0}
+  .upd .ghost{width:auto;margin:0;flex:0 0 auto;padding:9px 12px}
   .help b{color:var(--txt);font-weight:500}
 
   @media(max-width:600px){
@@ -158,6 +161,10 @@
   <div class="sub-h">entradas</div>
   <ul class="list" id="inList"></ul>
   <button class="ghost" id="resetLayout">repor constelação</button>
+  <div id="updSec" hidden>
+    <div class="sub-h">versão</div>
+    <div class="upd"><span id="updText">—</span><button class="ghost" id="updBtn">procurar atualização</button></div>
+  </div>
   <p class="help"><b>à volta do nó</b>: arrasta para mexer em dois parâmetros (↔ X, ↕ Y) · <b>centro</b>: arrasta para mover o nó — <b>a distância é tempo</b>: vida↔A/B dá o ritmo de cada engine, entrada↔sala quanto essa entrada é ouvida, grão↔sala a memória dos grãos, espaço↔saída o pré-delay, voz↔sala a articulação; a posição horizontal de A/B é o pan · <b>deriva</b>: o nó fica onde o pões e o canto mais próximo define o carácter (pcm, fm, grão, ruído; ao centro limpo); no círculo, a direção do ponto é a direção da deriva e a distância ao centro a velocidade — uma luz sai do nó até à borda e volta, levando o som consigo · <b>duplo toque</b> no centro de uma entrada liga/desliga · vários dedos ao mesmo tempo · <b>Espaço</b> mostra/esconde a barra · <b>R</b> roda a constelação devagar (Shift+R volta à posição original) · <b>A</b> liga/desliga o arpejo (densidade também no ↕ da vida) · <b>P</b> modo projeção · <b>F</b> ecrã inteiro</p>
 </div>
 
@@ -1369,6 +1376,36 @@ function initMain(){
     });
   });
   $('resetLayout').addEventListener('click',()=>{ layout={}; saveSoon(); });
+
+  /* ---- desktop app only: check for a new version on request (never automatic) ---- */
+  const RD=window.resonaDesktop;
+  if(RD){
+    const sec=$('updSec'), txt=$('updText'), btn=$('updBtn'); sec.hidden=false;
+    let next=null;                                    // what the button does next
+    const set=(t,label,action)=>{ txt.textContent=t; btn.textContent=label||''; btn.hidden=!label; btn.disabled=!action; next=action; };
+    const idle=v=>set('RESONA '+v,'procurar atualização',check);
+    async function check(){
+      set('a procurar…','a procurar…',null);
+      const r=await RD.check();
+      if(r.state==='available') r.canInstall ? set('versão '+r.version+' disponível','descarregar e instalar',download)
+                                             : set('versão '+r.version+' disponível','abrir página de download',()=>RD.openDownloads());
+      else if(r.state==='latest') set('RESONA '+r.version+' · é a versão mais recente','procurar outra vez',check);
+      else if(r.state==='dev') set('RESONA '+r.version+' · a correr a partir do código, sem atualizações',null,null);
+      else set('não consegui verificar: '+(r.message||'erro'),'tentar outra vez',check);
+    }
+    async function download(){
+      set('a descarregar… 0%','a descarregar…',null);
+      const r=await RD.download();
+      if(!r.ok) set('o download falhou: '+(r.message||'erro'),'tentar outra vez',download);
+    }
+    RD.onStatus(st=>{
+      if(st.state==='downloading') set('a descarregar… '+st.percent+'%','a descarregar…',null);
+      else if(st.state==='downloaded') set('versão '+st.version+' pronta a instalar','reiniciar e instalar',()=>RD.install());
+      else if(st.state==='error'&&next===null) set('erro: '+st.message,'tentar outra vez',check);
+    });
+    btn.addEventListener('click',()=>{ if(next) next(); });
+    RD.version().then(idle);
+  }
 
   /* ---- arpeggio editor: one key per scale degree, counted from the current chord root ---- */
   const arpKeys=$('arpKeys');
