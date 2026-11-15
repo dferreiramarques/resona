@@ -30,7 +30,7 @@ A versão desktop é uma app Electron que carrega os ficheiros por um protocolo 
 
 - **Usar a partir do código**: `npm install` e depois `npm run desktop`.
 - **Gerar o instalador localmente**: `npm run dist:win` (ou `dist:mac` num Mac, `dist:linux`). O instalador fica em `dist/`.
-- **Gerar os três de uma vez no GitHub**: cria uma tag de versão (`git tag v1.0.0 && git push origin v1.0.0`). O workflow `desktop` constrói os instaladores e junta-os a um *release* em rascunho, que publicas na página *Releases*.
+- **Gerar os três de uma vez no GitHub**: cria uma tag de versão (`git tag v1.0.0 && git push origin v1.0.0`). O workflow `desktop` constrói os instaladores e publica-os diretamente num *release* com o nome da tag (não é preciso criar o release à mão).
 
 Os instaladores não estão assinados: no Windows aparece o aviso do SmartScreen (*Mais informações → Executar mesmo assim*); no macOS abre-se com clique direito → *Abrir*.
 
