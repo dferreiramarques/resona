@@ -1,4 +1,4 @@
-// Keep in sync with WORKLET_SRC in index.html (inline fallback).
+// Keep in sync with WORKLET_SRC in resona.html: run `npm run sync-worklet` after editing.
 class CaptureProcessor extends AudioWorkletProcessor {
   constructor(){
     super();

@@ -35,6 +35,8 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
+      # the inline fallback copy of the audio worklet must match capture-worklet.js
+      - run: npm run check
       # the tag is the single source of truth for the version (v1.2.3 -> 1.2.3),
       # so electron-builder always publishes into the release that was just created
       - run: npm version "${GITHUB_REF_NAME#v}" --no-git-tag-version --allow-same-version

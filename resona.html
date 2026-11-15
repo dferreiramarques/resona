@@ -239,7 +239,8 @@ let ring=null,ringLen=0,ringWrite=0,ringSR=48000;
 // room analysis
 let rawLevel=0,roomEnv=0,noiseFloor=0.002,snappedClarity=0,lastPitchTime=-99;
 const pcHist=new Float32Array(12);
-let curRatio=1,targetRatio=1,hannCurve=makeHann(256);
+let curRatio=1,targetRatio=1;
+const grainCurve=makeHann(256).map(v=>v*0.5);   // grain envelope, shared by every grain
 // harmony
 let chordDeg=0,chordStart=0,nextChordAt=0,chordRoot=50,chordNotes=[],arpTones=[],arpIdx=0,arpDir=1,chordLabel='I';
 let master,masterComp,limiter,outAn,dryGain,wetOut,wetPre,enginesBus,gA,gB,engineA,engineB,
@@ -256,10 +257,13 @@ function mtof(m){return 440*Math.pow(2,(m-69)/12);}
 const actT={};                                  // node id -> 0..1 target activity
 function actBump(id,v){ actT[id]=Math.max(actT[id]||0,v==null?1:v); }
 const evLocal=[],evRemote=[];
-function pushEvent(ev){ evLocal.push(ev); evRemote.push(ev); }
+const EV_MAX=200;                               // drained by the render loop; bounded while the window is hidden
+function pushEvent(ev){ evLocal.push(ev); evRemote.push(ev);
+  if(evLocal.length>EV_MAX) evLocal.splice(0,evLocal.length-EV_MAX);
+  if(evRemote.length>EV_MAX) evRemote.splice(0,evRemote.length-EV_MAX); }
 
 const WORKLET_VER = 7;                         // bump when capture-worklet.js changes
-const WORKLET_SRC = `
+const WORKLET_SRC = `/* capture-worklet.js:begin */
 class CaptureProcessor extends AudioWorkletProcessor {
   constructor(){
     super();
@@ -359,15 +363,26 @@ class CrushProcessor extends AudioWorkletProcessor {
   }
 }
 registerProcessor('crush', CrushProcessor);
-`;
+/* capture-worklet.js:end */`;
 
-async function initEngine(){
-  if(engineReady) return;
-  ctx=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'playback'});
-  await ctx.resume();
+// Concurrent callers share one start-up; stopEngine() during start-up cancels it.
+let initPromise=null, initToken=0;
+function initEngine(){
+  if(engineReady) return Promise.resolve();
+  if(!initPromise) initPromise=startEngine().finally(()=>{ initPromise=null; });
+  return initPromise;
+}
+async function startEngine(){
+  const tok=++initToken;
+  const c=new (window.AudioContext||window.webkitAudioContext)({latencyHint:'playback'});
+  const cancelled=()=>{ if(tok===initToken) return false; try{ c.close(); }catch(e){} return true; };
+  await c.resume();
+  if(cancelled()) throw new Error('arranque cancelado');
+  try{ await c.audioWorklet.addModule('capture-worklet.js?v='+WORKLET_VER); }   // versioned: never a stale cached copy
+  catch(e){ const u=URL.createObjectURL(new Blob([WORKLET_SRC],{type:'application/javascript'})); await c.audioWorklet.addModule(u); }
+  if(cancelled()) throw new Error('arranque cancelado');
+  ctx=c;
   ringSR=ctx.sampleRate; ringLen=Math.floor(ringSR*5); ring=new Float32Array(ringLen); ringWrite=0;
-  try{ await ctx.audioWorklet.addModule('capture-worklet.js?v='+WORKLET_VER); }   // versioned: never a stale cached copy
-  catch(e){ const u=URL.createObjectURL(new Blob([WORKLET_SRC],{type:'application/javascript'})); await ctx.audioWorklet.addModule(u); }
   // analysis sees a mono downmix of all inputs
   worklet=new AudioWorkletNode(ctx,'capture',{numberOfInputs:1,numberOfOutputs:0,channelCount:1,channelCountMode:'explicit',channelInterpretation:'speakers'});
   worklet.port.onmessage=onBlock;
@@ -378,21 +393,22 @@ async function initEngine(){
   chordDeg=0; applyChord(0.02); chordStart=ctx.currentTime; nextChordAt=ctx.currentTime+chordPeriod();
   applyAll(true); applyDerived(true);
   running=true; engineReady=true;
-  beat.A.next=beat.B.next=0;
+  beat.A.next=beat.B.next=0; beat.A.last=beat.B.last=null;
   const my=++gen;
   scheduler(my); lifeStep(my); beatLoop(my);
 }
 function stopEngine(){
-  running=false; engineReady=false; gen++;
+  running=false; engineReady=false; gen++; initToken++;
   inputs.forEach(disconnectInput);
   if(ctx) ctx.close(); ctx=null; engineA=engineB=null;
 }
 
 /* ---------------- inputs (several mics / files) ---------------- */
 const inputs=[];      // {id,kind:'mic'|'file',deviceId,label,buffer,gx (pan),gy (gain),on,level,a:{audio nodes}|null}
-let inSeq=0;
 function shortLabel(s){ return (s||'').replace(/^(Default|Predefinição|Padrão)\s*-\s*/i,'').replace(/\s*\([0-9a-f]{4}:[0-9a-f]{4}\)\s*$/i,'').trim().slice(0,22); }
-function newInput(o){ const inp=Object.assign({id:'in'+(++inSeq),gx:0.5,gy:0.5,on:true,level:0,a:null},o); inp.node=inputNodeDef(inp); inputs.push(inp); return inp; }
+// ids are stable across sessions (saved with the input), so layout and listening send stay with the right input
+const newInputId=()=>'in'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+function newInput(o){ const inp=Object.assign({gx:0.5,gy:0.5,on:true,level:0,a:null},o); if(!inp.id) inp.id=newInputId(); inp.node=inputNodeDef(inp); inputs.push(inp); return inp; }
 // switching an input off releases the device but keeps its node, position and settings
 async function setInputOn(inp,on){
   inp.on=on;
@@ -407,12 +423,15 @@ async function connectInput(inp){
     // On speakers, echo cancellation stops the mic hearing RESONA itself (feedback loop).
     const opts=id=>({audio:{deviceId:id?{exact:id}:undefined,
       echoCancellation:P.out==='speakers',noiseSuppression:false,autoGainControl:false,channelCount:1}});
+    const myCtx=ctx;
     let stream;
     try{ stream=await navigator.mediaDevices.getUserMedia(opts(inp.deviceId)); }
     catch(err){                       // saved device gone or renamed: fall back to the default mic
       if(!inp.deviceId||!/Overconstrained|NotFound/.test(err.name)) throw err;
       stream=await navigator.mediaDevices.getUserMedia(opts(null)); inp.deviceId=null; inp.label='';
     }
+    // the engine may have stopped/restarted, or the input been switched off, while the device opened
+    if(ctx!==myCtx||!running||!inp.on||inp.a||!inputs.includes(inp)){ stream.getTracks().forEach(t=>t.stop()); return; }
     const tr=stream.getAudioTracks()[0], st=(tr&&tr.getSettings)?tr.getSettings():{};
     if(!inp.deviceId&&st.deviceId) inp.deviceId=st.deviceId;
     if(!inp.label) inp.label=shortLabel(tr&&tr.label)||'mic';
@@ -795,7 +814,8 @@ function beatLoop(my){
   for(const e of activeEngines()){
     const b=beat[e.which], iv=e.which==='A'?D.beatA:D.beatB;
     if(b.next<now) b.next=now+0.05;
-    while(b.next<now+0.12){ fireBeat(e,b,b.next,iv); b.next+=iv; }
+    if(b.last!=null&&b.next>b.last+iv) b.next=Math.max(now+0.02,b.last+iv);   // interval just got shorter
+    while(b.next<now+0.12){ fireBeat(e,b,b.next,iv); b.last=b.next; b.next+=iv; }
   }
   setTimeout(()=>beatLoop(my),25);
 }
@@ -833,8 +853,8 @@ function spawnGrain(when){
   const rs=(ringWrite-back+ringLen*4)%ringLen;
   const gb=ctx.createBuffer(1,gs,ringSR); const gd=gb.getChannelData(0); for(let i=0;i<gs;i++) gd[i]=ring[(rs+i)%ringLen];
   const sN=ctx.createBufferSource(); sN.buffer=gb; sN.playbackRate.value=curRatio;
-  const env=ctx.createGain(); env.gain.value=0; const pd=dur/curRatio; const curve=new Float32Array(hannCurve.length); for(let i=0;i<curve.length;i++)curve[i]=hannCurve[i]*0.5;
-  try{ env.gain.setValueCurveAtTime(curve,when,pd); }catch(e){}
+  const env=ctx.createGain(); env.gain.value=0; const pd=dur/curRatio;
+  try{ env.gain.setValueCurveAtTime(grainCurve,when,pd); }catch(e){}
   const pan=ctx.createStereoPanner?ctx.createStereoPanner():null; if(pan)pan.pan.value=(Math.random()*2-1)*spread;
   sN.connect(env); if(pan){env.connect(pan);pan.connect(textureGain);}else env.connect(textureGain);
   sN.start(when); sN.stop(when+pd+0.02); sN.onended=()=>{ try{sN.disconnect();}catch(e){} try{env.disconnect();}catch(e){} if(pan)try{pan.disconnect();}catch(e){} };
@@ -910,7 +930,7 @@ function applyDerived(force){
 let saveT=0;
 function saveSoon(){ clearTimeout(saveT); saveT=setTimeout(()=>{
   store.set('p',P); store.set('layout.'+orient(),layout);
-  store.set('inputs',inputs.filter(i=>i.kind==='mic').map(i=>({deviceId:i.deviceId,label:i.label,gx:i.gx,gy:i.gy,on:i.on})));
+  store.set('inputs',inputs.filter(i=>i.kind==='mic').map(i=>({id:i.id,deviceId:i.deviceId,label:i.label,gx:i.gx,gy:i.gy,on:i.on})));
 },400); }
 
 /* ---------------- constellation model ---------------- */
@@ -961,7 +981,6 @@ const DEFAULT_POS={sala:[.27,.5],vida:[.42,.18],A:[.55,.34],B:[.55,.68],grao:[.4
 function orient(){ return innerHeight>innerWidth*1.1?'p':'l'; }
 let layout=store.get('layout.'+orient(),{});
 let lastOrient=orient();
-// "deriva" wanders around its anchor (the place you put it): X of its pad = range, Y = speed
 // The deriva node stays where you put it (that spot is the "home" character). Its pad is a
 // vector: direction of the dot = direction of the drift, distance from the centre = speed.
 // A ghost light sweeps from the node to the screen edge in that direction and back; the
@@ -981,7 +1000,6 @@ function derivaStep(dt){
     const tri=1-Math.abs(1-2*deriva.ph), target=tri*tri*(3-2*tri);
     deriva.s+=(target-deriva.s)*Math.min(1,dt*6);
   } else { deriva.s+=(0-deriva.s)*Math.min(1,dt*1.5); if(deriva.s<0.002) deriva.ph=0; }
-  deriva.L=L; deriva.v=v;
   const dx=v.m>0?v.dx:(deriva.lastDx||0), dy=v.m>0?v.dy:(deriva.lastDy||0); if(v.m>0){ deriva.lastDx=dx; deriva.lastDy=dy; deriva.lastL=L; }
   const len=(v.m>0?L:(deriva.lastL||0))*deriva.s;
   deriva.live=[Math.max(0,Math.min(1,a[0]+dx*len)),Math.max(0,Math.min(1,a[1]+dy*len))];
@@ -1213,7 +1231,7 @@ const cv=document.getElementById('stage');
 if(IS_PROJ){
   document.body.classList.add('projector'); document.title='RESONA — projetor';
   const r=new Renderer(cv,true); let S={nodes:[],edges:[],running:false}; const evq=[];
-  if(bc) bc.onmessage=e=>{ S=e.data; if(e.data.events) evq.push(...e.data.events); };
+  if(bc) bc.onmessage=e=>{ S=e.data; if(e.data.events){ evq.push(...e.data.events); if(evq.length>EV_MAX) evq.splice(0,evq.length-EV_MAX); } };
   const loop=()=>{ requestAnimationFrame(loop); r.frame(Object.assign({},S,{events:evq.splice(0)}),{top:0}); }; loop();
   const hint=document.getElementById('hint'); setTimeout(()=>hint.style.opacity=0,6000);
   addEventListener('click',()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); });
@@ -1230,7 +1248,8 @@ function initMain(){
   const say=(t,err)=>{ msg.textContent=t; msg.classList.toggle('err',!!err); };
 
   // restore saved mic list (connected when power is switched on)
-  store.get('inputs',[]).forEach(s=>newInput({kind:'mic',deviceId:s.deviceId,label:s.label,gx:s.gx,gy:s.gy,on:s.on!==false}));
+  // older saves had no id: their layout was keyed by load order (in1, in2…), keep that once
+  store.get('inputs',[]).forEach((s,k)=>newInput({id:s.id||('in'+(k+1)),kind:'mic',deviceId:s.deviceId,label:s.label,gx:s.gx,gy:s.gy,on:s.on!==false}));
 
   function snapshot(){
     const nodes=allNodes().map(n=>{
@@ -1335,11 +1354,11 @@ function initMain(){
   function refreshUI(){ powerBtn.classList.toggle('live',running); powerBtn.textContent=running?'desligar':'ligar';
     if(!running){ $('chordName').textContent='—'; $('chordSub').textContent='constelação · liga para começar'; }
     renderInList(); }
-  async function powerOn(){
+  async function powerOn(withDefaultMic=true){
     say('a ligar…');
     try{
       await initEngine();
-      if(!inputs.length) newInput({kind:'mic'});
+      if(!inputs.length&&withDefaultMic) newInput({kind:'mic'});
       const fails=[];
       for(const inp of inputs){ try{ await connectInput(inp); }catch(err){ fails.push(inp.label||'mic'); } }
       const live=inputs.filter(i=>i.a).length;
@@ -1464,7 +1483,8 @@ function initMain(){
   const wavFile=$('wavFile');
   $('fileBtn').addEventListener('click',()=>wavFile.click());
   wavFile.addEventListener('change',async e=>{ const f=e.target.files&&e.target.files[0]; if(!f) return; picker.hidden=true; say('a descodificar '+f.name+'…');
-    try{ if(!running) await powerOn();
+    try{ if(!running) await powerOn(false);                 // a file alone: don't also open the mic
+      if(!running) throw new Error('o motor de áudio não arrancou');
       const buffer=await ctx.decodeAudioData(await f.arrayBuffer());
       const inp=newInput({kind:'file',buffer,label:f.name.replace(/\.[^.]+$/,'').slice(0,22)}); await connectInput(inp);
       say('♺ '+f.name+' (loop) → síntese'); refreshUI();
@@ -1484,9 +1504,10 @@ function initMain(){
   setDrawer(store.get('drawer',true));
   drawerBtn.addEventListener('click',()=>{ setDrawer(body.classList.contains('collapsed')); drawerBtn.blur(); });
   // Space toggles the drawer (also when a button has focus, instead of re-clicking it)
-  addEventListener('keydown',e=>{ if(e.code==='Space'&&e.target.tagName!=='SELECT'&&e.target.tagName!=='INPUT'){ e.preventDefault(); if(!e.repeat) setDrawer(body.classList.contains('collapsed')); } });
+  const isFormKey=e=>e.ctrlKey||e.metaKey||e.altKey||/^(SELECT|INPUT|TEXTAREA)$/.test(e.target.tagName);
+  addEventListener('keydown',e=>{ if(e.code==='Space'&&!isFormKey(e)){ e.preventDefault(); if(!e.repeat) setDrawer(body.classList.contains('collapsed')); } });
   addEventListener('keyup',e=>{ if(e.code==='Space'&&e.target.tagName==='BUTTON') e.preventDefault(); });
-  addEventListener('keydown',e=>{ if(e.target.tagName==='SELECT') return;
+  addEventListener('keydown',e=>{ if(isFormKey(e)||e.repeat) return;      // never steal Ctrl/Cmd shortcuts or typing
     if(e.key==='p'||e.key==='P') setProj(!body.classList.contains('proj'));
     if(e.key==='a'||e.key==='A') setArpOn(!P.arpOn);
     if(e.key==='R'&&e.shiftKey){ rot.on=false; rot.homing=true; say('constelação a voltar à posição original'); }
