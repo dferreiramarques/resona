@@ -1,7 +1,7 @@
 {
   "name": "resona",
   "productName": "RESONA",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Ambient resynthesis: transforms the sound of the room into ambient music in real time.",
   "main": "desktop/main.js",
   "author": "David Marques",
