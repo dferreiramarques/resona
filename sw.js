@@ -1,7 +1,8 @@
-const CACHE = 'resona-v9';
+const CACHE = 'resona-v10';
 const ASSETS = [
   './',
   './index.html',
+  './resona.html',
   './capture-worklet.js',
   './manifest.json',
   './icon-192.png',

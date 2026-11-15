@@ -5,7 +5,7 @@ const { app, BrowserWindow, protocol, net, session, Menu, shell } = require('ele
 const path = require('path');
 const { pathToFileURL } = require('url');
 
-const ROOT = path.join(__dirname, '..');                 // index.html, worklet, icons
+const ROOT = path.join(__dirname, '..');                 // resona.html (the app), worklet, icons
 const SMOKE = process.argv.includes('--smoke');          // build check: load, report errors, quit
 
 protocol.registerSchemesAsPrivileged([{
@@ -20,7 +20,7 @@ function createWindow() {
     icon: path.join(ROOT, 'icon-512.png'),
     webPreferences: { contextIsolation: true, sandbox: true, backgroundThrottling: false }
   });
-  win.loadURL('resona://app/index.html');
+  win.loadURL('resona://app/resona.html');
 
   // "projetor" opens a second RESONA window (same origin, synced over BroadcastChannel);
   // any other link goes to the system browser
@@ -52,7 +52,7 @@ function createWindow() {
 app.whenReady().then(() => {
   protocol.handle('resona', (req) => {
     let p = decodeURIComponent(new URL(req.url).pathname);
-    if (p === '/' || p === '') p = '/index.html';
+    if (p === '/' || p === '') p = '/resona.html';
     const file = path.normalize(path.join(ROOT, p));
     if (!file.startsWith(ROOT + path.sep)) return new Response('forbidden', { status: 403 });
     return net.fetch(pathToFileURL(file).toString());

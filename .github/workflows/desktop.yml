@@ -1,6 +1,6 @@
-# Builds the desktop installers (Windows .exe, macOS .dmg, Linux AppImage) and attaches
-# them to a published GitHub Release. Run it by pushing a version tag, e.g.:
-#   git tag v1.0.0 && git push origin v1.0.0
+# Builds the desktop installers (Windows .exe + portable .zip, macOS .dmg, Linux AppImage)
+# and attaches them to a published GitHub Release. Run it by pushing a version tag, e.g.:
+#   git tag v1.0.1 && git push origin v1.0.1
 name: desktop
 
 on:
@@ -12,7 +12,18 @@ permissions:
   contents: write
 
 jobs:
+  # create the release once, so the three builds below upload into the same one
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh release view "$TAG" --repo "$REPO" >/dev/null 2>&1 || gh release create "$TAG" --repo "$REPO" --title "RESONA $TAG" --generate-notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+
   build:
+    needs: release
     strategy:
       fail-fast: false
       matrix:

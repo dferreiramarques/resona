@@ -2,7 +2,7 @@
   "name": "RESONA \u2014 Ambient Resynthesis",
   "short_name": "RESONA",
   "description": "Turns the sound of the room into a granular ambient synthesiser, pitch-snapped to a scale.",
-  "start_url": "./index.html",
+  "start_url": "./resona.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

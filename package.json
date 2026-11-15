@@ -1,7 +1,7 @@
 {
   "name": "resona",
   "productName": "RESONA",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Ambient resynthesis: transforms the sound of the room into ambient music in real time.",
   "main": "desktop/main.js",
   "author": "David Marques",
@@ -22,8 +22,9 @@
   "build": {
     "appId": "io.monco.resona",
     "productName": "RESONA",
+    "copyright": "Copyright © 2026 David Marques · monco.io",
     "files": [
-      "index.html",
+      "resona.html",
       "capture-worklet.js",
       "manifest.json",
       "sw.js",
@@ -36,10 +37,13 @@
       "output": "dist"
     },
     "win": {
-      "target": "nsis",
-      "icon": "icon-512.png"
+      "target": ["nsis", "zip"],
+      "icon": "icon-512.png",
+      "legalTrademarks": "RESONA"
     },
     "nsis": {
+      "perMachine": false,
+      "packElevateHelper": false,
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,

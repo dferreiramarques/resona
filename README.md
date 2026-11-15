@@ -4,7 +4,7 @@ App web (PWA) que transforma o som da sala em música ambiente: ouve o microfone
 
 ## Usar
 
-Abre o `index.html` num browser recente (HTTPS ou localhost) e carrega em **ligar**. O microfone predefinido abre automaticamente.
+Abre o `resona.html` num browser recente (HTTPS ou localhost) e carrega em **ligar**. O microfone predefinido abre automaticamente. O `index.html` é a página de produto.
 
 - **Constelação**: cada nó é uma luz; arrastar à volta dele funciona como pad XY sobre dois parâmetros (↔ X, ↕ Y). Dá para mexer em vários nós ao mesmo tempo com vários dedos.
 - **A distância é tempo**: arrastar o centro de um nó muda-o de sítio, e isso altera o som. A distância vida↔A/B é o ritmo de cada engine (os impulsos de luz que viajam da vida até ao engine são as notas); entrada↔sala é quanto essa entrada é ouvida; grão↔sala é a memória dos grãos; espaço↔saída é o pré-delay da reverb; voz↔sala é a articulação do vocoder; a posição horizontal de A/B é o pan.
