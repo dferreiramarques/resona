@@ -1,4 +1,4 @@
-const CACHE = 'resona-v3';
+const CACHE = 'resona-v9';
 const ASSETS = [
   './',
   './index.html',
@@ -21,19 +21,17 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+// Network first (so updates show up immediately), cache as offline fallback.
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
   e.respondWith(
-    caches.match(req).then((cached) => {
-      const live = fetch(req).then((res) => {
-        if (res && res.status === 200 && res.type === 'basic') {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy));
-        }
-        return res;
-      }).catch(() => cached);
-      return cached || live;
-    })
+    fetch(req).then((res) => {
+      if (res && res.status === 200 && res.type === 'basic') {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(req, copy));
+      }
+      return res;
+    }).catch(() => caches.match(req))
   );
 });
