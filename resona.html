@@ -158,7 +158,7 @@
   <div class="sub-h">entradas</div>
   <ul class="list" id="inList"></ul>
   <button class="ghost" id="resetLayout">repor constelação</button>
-  <p class="help"><b>à volta do nó</b>: arrasta para mexer em dois parâmetros (↔ X, ↕ Y) · <b>centro</b>: arrasta para mover o nó — <b>a distância é tempo</b>: vida↔A/B dá o ritmo de cada engine, entrada↔sala quanto essa entrada é ouvida, grão↔sala a memória dos grãos, espaço↔saída o pré-delay, voz↔sala a articulação; a posição horizontal de A/B é o pan · <b>deriva</b>: o nó fica onde o pões e o canto mais próximo define o carácter (pcm, fm, grão, ruído; ao centro limpo); no círculo, a direção do ponto é a direção da deriva e a distância ao centro a velocidade — uma luz sai do nó até à borda e volta, levando o som consigo · <b>duplo toque</b> no centro de uma entrada liga/desliga · vários dedos ao mesmo tempo · <b>Espaço</b> mostra/esconde a barra · <b>A</b> liga/desliga o arpejo (densidade também no ↕ da vida) · <b>P</b> modo projeção · <b>F</b> ecrã inteiro</p>
+  <p class="help"><b>à volta do nó</b>: arrasta para mexer em dois parâmetros (↔ X, ↕ Y) · <b>centro</b>: arrasta para mover o nó — <b>a distância é tempo</b>: vida↔A/B dá o ritmo de cada engine, entrada↔sala quanto essa entrada é ouvida, grão↔sala a memória dos grãos, espaço↔saída o pré-delay, voz↔sala a articulação; a posição horizontal de A/B é o pan · <b>deriva</b>: o nó fica onde o pões e o canto mais próximo define o carácter (pcm, fm, grão, ruído; ao centro limpo); no círculo, a direção do ponto é a direção da deriva e a distância ao centro a velocidade — uma luz sai do nó até à borda e volta, levando o som consigo · <b>duplo toque</b> no centro de uma entrada liga/desliga · vários dedos ao mesmo tempo · <b>Espaço</b> mostra/esconde a barra · <b>R</b> roda a constelação devagar (Shift+R volta à posição original) · <b>A</b> liga/desliga o arpejo (densidade também no ↕ da vida) · <b>P</b> modo projeção · <b>F</b> ecrã inteiro</p>
 </div>
 
 <div class="sheet" id="picker" hidden>
@@ -1077,7 +1077,16 @@ class Renderer{
   frame(S,ui){
     if(innerWidth!==this.w||innerHeight!==this.h) this.resize();
     const g=this.g,w=this.w,h=this.h,G=geom(w,h,ui.top||0),R=G.R,T=performance.now()/1000,now=Date.now(); this.G=G;
-    const pos={}; S.nodes.forEach(n=>pos[n.id]={x:G.X(n.x),y:G.Y(n.y),n,rgb:n.kind==='input'?INPUT_RGB:(n.id==='deriva'?derivaRGB(S.char):(NODE_RGB[n.id]||[150,240,230]))}); this.pos=pos;
+    // slow rotation (visual only): S.view = {a: angle, m: 0..1 how engaged}. While engaged the
+    // constellation also shrinks so its rotating circle fits the screen. XY pads stay upright.
+    const VW=S.view||{a:0,m:0}, cx=G.X(0.5), cy=G.Y(0.5);
+    let rf=1; S.nodes.forEach(n=>{ rf=Math.max(rf,Math.hypot(G.X(n.x)-cx,G.Y(n.y)-cy)); });
+    const ra=Math.min(w/2,(h-(ui.top||0))/2)-R*1.3, fit=Math.max(0.3,Math.min(1,ra/(rf+R*0.2)));
+    const sc=1-VW.m*(1-fit), ca=Math.cos(VW.a)*sc, sa=Math.sin(VW.a)*sc;
+    const tf=(x,y)=>[cx+(x-cx)*ca-(y-cy)*sa, cy+(x-cx)*sa+(y-cy)*ca];
+    this.inv=(x,y)=>{ const dx=x-cx, dy=y-cy, k=1/(sc*sc); return [cx+(dx*ca+dy*sa)*k, cy+(-dx*sa+dy*ca)*k]; };
+    const pos={}; S.nodes.forEach(n=>{ const [x,y]=tf(G.X(n.x),G.Y(n.y));
+      pos[n.id]={x,y,n,rgb:n.kind==='input'?INPUT_RGB:(n.id==='deriva'?derivaRGB(S.char):(NODE_RGB[n.id]||[150,240,230]))}; }); this.pos=pos;
     const lvl=Math.min(1,S.level||0);
 
     for(const ev of S.events||[]){
@@ -1097,7 +1106,7 @@ class Renderer{
     g.drawImage(this.skySoft,0,0,w,h);
     for(const s of this.stars){ const a=0.08+0.22*(0.5+0.5*Math.sin(T*s.s*0.4+s.p)); g.fillStyle=`rgba(210,230,240,${a})`; g.fillRect(s.x*w,s.y*h*0.8,s.r,s.r); }
 
-    if(S.char) for(const P of POLES){ const wv=S.char[P.k]||0, x=G.X(P.x), y=G.Y(P.y), r=R*(3+wv*2);
+    if(S.char) for(const P of POLES){ const wv=S.char[P.k]||0, [x,y]=tf(G.X(P.x),G.Y(P.y)), r=R*(3+wv*2);
       const gr=g.createRadialGradient(x,y,0,x,y,r); g.globalCompositeOperation='lighter';
       gr.addColorStop(0,`rgba(${P.rgb[0]},${P.rgb[1]},${P.rgb[2]},${0.05+wv*0.18})`); gr.addColorStop(1,`rgba(${P.rgb[0]},${P.rgb[1]},${P.rgb[2]},0)`);
       g.fillStyle=gr; g.beginPath(); g.arc(x,y,r,0,6.283); g.fill(); g.globalCompositeOperation='source-over'; }
@@ -1114,7 +1123,7 @@ class Renderer{
         if(Math.random()<0.5) this.puff(p.px,p.py,p.rgb,{r:R*0.09,speed:0.04,decay:0.007,a:off?0.015:0.05,grow:1.004});
         if(Math.random()<0.35){ const t=Math.random(); this.puff(p.x+(p.px-p.x)*t,p.y+(p.py-p.y)*t,p.rgb,{r:R*0.07,speed:0.03,decay:0.009,a:0.03,grow:1.004}); }
       }
-      if(S.ghost&&pos.deriva){ const gx=G.X(S.ghost[0]), gy=G.Y(S.ghost[1]), rgb=derivaRGB(S.char);
+      if(S.ghost&&pos.deriva){ const [gx,gy]=tf(G.X(S.ghost[0]),G.Y(S.ghost[1])), rgb=derivaRGB(S.char);
         this.puff(gx,gy,rgb,{r:R*0.24,speed:0.05,decay:0.005,a:0.07,grow:1.005});
         if(Math.random()<0.3){ const t=Math.random(), D0=pos.deriva; this.puff(D0.x+(gx-D0.x)*t,D0.y+(gy-D0.y)*t,rgb,{r:R*0.1,speed:0.03,decay:0.007,a:0.02,grow:1.004}); } }
       for(const [a,b] of S.edges){ const A=pos[a],B=pos[b]; if(!A||!B) continue; const act=A.n.act||0;
@@ -1174,7 +1183,7 @@ class Renderer{
       light(p.x,p.y,R*0.3*(1+act*0.5),p.rgb,0.8*dim);
       light(p.px,p.py,hot?18:12,p.rgb,(hot?0.9:0.6)*dim);
     }
-    if(S.ghost&&pos.deriva){ const rgb=derivaRGB(S.char); light(G.X(S.ghost[0]),G.Y(S.ghost[1]),R*0.45,rgb,0.55); }
+    if(S.ghost&&pos.deriva){ const rgb=derivaRGB(S.char), [gx,gy]=tf(G.X(S.ghost[0]),G.Y(S.ghost[1])); light(gx,gy,R*0.45,rgb,0.55); }
     g.globalCompositeOperation='source-over';
     if(!this.projector&&ui.labels!==false&&S.char){ g.font=`500 ${fs-1}px 'DM Mono', monospace`;
       for(const P of POLES){ const wv=S.char[P.k]||0; g.fillStyle=`rgba(${P.rgb[0]},${P.rgb[1]},${P.rgb[2]},${0.3+wv*0.6})`;
@@ -1209,6 +1218,7 @@ function initMain(){
   const renderer=new Renderer(cv,false);
   const body=document.body, bar=$('bar'), msg=$('msg');
   const ui={top:0,hover:null,active:new Set(),moving:false};
+  const rot={on:false,a:0,vel:0,m:0,homing:false};
   const acts={};
   const say=(t,err)=>{ msg.textContent=t; msg.classList.toggle('err',!!err); };
 
@@ -1232,7 +1242,7 @@ function initMain(){
               xl:n.xl,yl:n.yl,xv:n.fx(ux),yv:n.fy(uy),pv:n.pos?n.pos():'',off:!!(inp&&!inp.on)};
     });
     const pc=((chordRoot%12)+12)%12;
-    return {running,nodes,edges:edgeList(),root:running?pc:null,chord:running?NOTES[pc]:'',label:chordLabel,level:outLevel,char:Object.assign({},D.char),ghost:deriva.live&&deriva.s>0.01?deriva.live.slice():null};
+    return {running,nodes,edges:edgeList(),root:running?pc:null,chord:running?NOTES[pc]:'',label:chordLabel,level:outLevel,char:Object.assign({},D.char),ghost:deriva.live&&deriva.s>0.01?deriva.live.slice():null,view:{a:rot.a,m:rot.m}};
   }
 
   let outLevel=0, frameN=0;
@@ -1249,7 +1259,16 @@ function initMain(){
     const collapsed=body.classList.contains('collapsed');
     ui.top=(body.classList.contains('proj')||collapsed)?0:bar.offsetHeight;
     ui.labels=!collapsed;                        // drawer closed: lights only, no text
-    const nowT=performance.now(); derivaStep(Math.min(0.1,(nowT-(loop.last||nowT))/1000)); loop.last=nowT;
+    const nowT=performance.now(), fdt=Math.min(0.1,(nowT-(loop.last||nowT))/1000); loop.last=nowT;
+    derivaStep(fdt);
+    // rotation: ~one turn every 4 minutes, eased in; when stopped it slows down and drifts home
+    const TAU=Math.PI*2, RV=TAU/240, home=Math.round(rot.a/TAU)*TAU;
+    rot.vel+=((rot.on?RV:0)-rot.vel)*Math.min(1,fdt*0.4);
+    rot.a+=rot.vel*fdt;
+    // Shift+R: drift back to the original orientation, never faster than 3x the rotation speed
+    if(rot.homing&&!rot.on){ const d=home-rot.a; rot.a+=Math.max(-3*RV,Math.min(3*RV,d*0.3))*fdt; if(Math.abs(d)<0.003){ rot.a=0; rot.homing=false; } }
+    rot.m+=((rot.on||Math.abs(rot.a-home)>0.003?1:0)-rot.m)*Math.min(1,fdt*0.5);
+    if(!rot.on&&!rot.homing&&rot.m<0.002){ rot.a=0; rot.m=0; }
     applyDerived(false);
     measure();
     const S=snapshot();
@@ -1278,7 +1297,8 @@ function initMain(){
       let u=(x-p.x)/G.R, v=-(y-p.y)/G.R; const l=Math.hypot(u,v); if(l>1){ u/=l; v/=l; }
       const [sx,sy]=discToSquare(u,v); n.set((sx+1)/2,(sy+1)/2);
     } else {
-      layout[t.id]=[Math.max(0,Math.min(1,G.ix(x-t.ox))),Math.max(0,Math.min(1,G.iy(y-t.oy)))];
+      const [ux,uy]=renderer.inv?renderer.inv(x-t.ox,y-t.oy):[x-t.ox,y-t.oy];
+      layout[t.id]=[Math.max(0,Math.min(1,G.ix(ux))),Math.max(0,Math.min(1,G.iy(uy)))];
       saveSoon();
     }
   }
@@ -1432,6 +1452,8 @@ function initMain(){
   addEventListener('keydown',e=>{ if(e.target.tagName==='SELECT') return;
     if(e.key==='p'||e.key==='P') setProj(!body.classList.contains('proj'));
     if(e.key==='a'||e.key==='A') setArpOn(!P.arpOn);
+    if(e.key==='R'&&e.shiftKey){ rot.on=false; rot.homing=true; say('constelação a voltar à posição original'); }
+    else if(e.key==='r'||e.key==='R'){ rot.on=!rot.on; rot.homing=false; say(rot.on?'constelação a rodar (R para parar · Shift+R volta ao início)':'rotação a parar'); }
     if(e.key==='f'||e.key==='F'){ if(document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(()=>{}); }
     if(e.key==='Escape'){ sheet.hidden=picker.hidden=true; } });
   $('projBtn').addEventListener('click',()=>{

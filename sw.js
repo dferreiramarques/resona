@@ -1,4 +1,4 @@
-const CACHE = 'resona-v10';
+const CACHE = 'resona-v11';
 const ASSETS = [
   './',
   './index.html',
