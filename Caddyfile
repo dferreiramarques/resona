@@ -1,0 +1,13 @@
+{
+	admin off
+}
+
+# Railway sets $PORT; 8080 when run elsewhere.
+:{$PORT:8080} {
+	root * /srv
+	encode gzip
+	# always revalidate, so a new deploy reaches people (and the PWA) immediately
+	header Cache-Control "no-cache"
+	header Permissions-Policy "microphone=(self)"
+	file_server
+}

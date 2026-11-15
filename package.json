@@ -1,0 +1,72 @@
+{
+  "name": "resona",
+  "productName": "RESONA",
+  "version": "1.0.0",
+  "description": "Ambient resynthesis: transforms the sound of the room into ambient music in real time.",
+  "main": "desktop/main.js",
+  "author": "David Marques",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "desktop": "electron .",
+    "smoke": "electron . --smoke",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win",
+    "dist:mac": "electron-builder --mac",
+    "dist:linux": "electron-builder --linux"
+  },
+  "devDependencies": {
+    "electron": "44.10.1",
+    "electron-builder": "26.18.0"
+  },
+  "build": {
+    "appId": "io.monco.resona",
+    "productName": "RESONA",
+    "files": [
+      "index.html",
+      "capture-worklet.js",
+      "manifest.json",
+      "sw.js",
+      "icon-192.png",
+      "icon-512.png",
+      "icon-maskable.png",
+      "desktop/main.js"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "icon-512.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "shortcutName": "RESONA"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "icon-512.png",
+      "category": "public.app-category.music",
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "O RESONA ouve o microfone para gerar música ambiente em tempo real."
+      }
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "icon-512.png",
+      "category": "Audio"
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "releaseType": "draft"
+      }
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dferreiramarques/resona.git"
+  }
+}
